@@ -1,18 +1,32 @@
 #include <iostream>
 
-
+#include "block/block.h"
 
 using namespace std;
 
-
 int main()
 {
-//  Point test = Point(2,2);
+  Block* i_block = new IBlock();
+
+  i_block->printBlock();
+  cout << endl;
+
+  i_block->rotateBlock(Rotation::CW);
+  i_block->printBlock();
+  cout << endl;
+
+  i_block->rotateBlock(Rotation::ACW);
+  i_block->printBlock();
+  cout << endl;
+
+//  i_block->rotateBlock(Direction::Rotation::CW);
+//  i_block->printBlock();
+//  cout << endl;
 //
-//  --test;
-//
-//  cout << test.getX() << " " << test.getY();
-	cout << "Test" << endl;
-	cout << "Test222" << endl;
+//  i_block->rotateBlock(Direction::Rotation::CW);
+//  i_block->printBlock();
+  cout << endl;
+
   return 0;
 }
+
