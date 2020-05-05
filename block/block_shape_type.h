@@ -1,10 +1,10 @@
 #ifndef SHAPE_TYPE_H
 #define SHAPE_TYPE_H
 
-class ShapeType
+class BlockShapeType
 {
 public:
-  ShapeType(int shape_type = 0);
+  BlockShapeType(int shape_type = 0);
 
   void rotateCw();
   void rotateAcw();

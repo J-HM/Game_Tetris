@@ -1,9 +1,6 @@
 #ifndef ROTAION_H
 #define ROTAION_H
 
-#include <iostream>
-
-
 class Rotation
 {
 public:

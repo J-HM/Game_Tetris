@@ -5,41 +5,34 @@
 
 #include "../direction/rotation/rotation.h"
 #include "../direction/shifting/shifting.h"
-#include "shape_type.h"
+#include "block_shape_type.h"
 
-using std::vector;
+typedef std::vector<std::vector<bool>> BlockShape;
+
+typedef std::vector<BlockShape> BlockShapeList;
+
 
 class Block
 {
 public:
-  Block(const vector<vector<vector<bool>>>& k_block_shape_list);
+  Block(const BlockShapeList& k_block_shape_list);
 
   void rotateBlock(Rotation rotation);
   void moveBlock(Shifting shifting);
   void printBlock();
 
 protected:
-  const vector<vector<bool>>* k_block_shape_;
-  ShapeType shape_type_;
+  const BlockShape* k_block_shape_;
+  BlockShapeType block_shape_type_; // 0(default), 1, 2, 3
 
 private:
-  const vector<vector<vector<bool>>>& k_block_shape_list_;
+  const BlockShapeList& k_block_shape_list_;
   bool is_focusing_;
-};
 
-
-class IBlock : public Block
-{
-public:
-  const static vector<vector<vector<bool>>> k_block_shape_list_;
-  IBlock();
-};
-
-class OBlock : public Block
-{
-public:
-  const static vector<vector<vector<bool>>> k_block_shape_list_;
-  OBlock();
+  const static BlockShapeList k_i_block_shape_list_;
+  const static BlockShapeList k_j_block_shape_list_;
+  const static BlockShapeList k_l_block_shape_list_;
+  const static BlockShapeList k_o_block_shape_list_;
 };
 
 

@@ -1,29 +1,24 @@
 #include "block.h"
 #include <iostream>
 
-using std::vector;
-
-Block::Block(const vector<vector<vector<bool>>>& k_block_shape_list)
+Block::Block(const BlockShapeList& k_block_shape_list)
     : k_block_shape_(&k_block_shape_list.at(0)),
-      shape_type_(0),
+      block_shape_type_(0),
       k_block_shape_list_(k_block_shape_list),
       is_focusing_(false)
+
 { }
 
 void Block::rotateBlock(Rotation rotation)
 {
   if (rotation == Rotation::CW)
-    shape_type_.rotateCw();
+    block_shape_type_.rotateCw();
   else if (rotation == Rotation::ACW)
-    shape_type_.rotateAcw();
+    block_shape_type_.rotateAcw();
   else
     std::cout << "Error: Rotate with wrong direction" << std::endl;
-  k_block_shape_ = &k_block_shape_list_.at(shape_type_.getIndex());
+  k_block_shape_ = &k_block_shape_list_.at(block_shape_type_.getIndex());
 }
-
-
-IBlock::IBlock() : Block(IBlock::k_block_shape_list_) { }
-OBlock::OBlock() : Block(OBlock::k_block_shape_list_) { }
 
 
 // TEST CODE
