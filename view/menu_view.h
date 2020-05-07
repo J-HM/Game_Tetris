@@ -1,19 +1,21 @@
-#ifndef VIEW_H
-#define VIEW_H
+#ifndef MENU_VIEW_H
+#define MENU_VIEW_H
 
 #include <string>
 #include <vector>
-#include "../user/user.h"
+
+#include "../model/user/user.h"
+#include "../model/board/board.h"
+
 
 enum Menu { Start, End };
 
-class View
+class MenuView
 {
 public:
-  View(std::vector<User> const& user_ranking);
+  MenuView(std::vector<User> const& user_ranking);
   Menu openMenuView() const;
   std::string openInputNameView() const;
-  void setUserRanking(std::vector<User> const& user_ranking) const;
 
 private:
   void printHeader() const;

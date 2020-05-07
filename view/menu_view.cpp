@@ -1,18 +1,19 @@
-#include "view.h"
 #include <iostream>
 #include <conio.h>
 #include <windows.h>
 
+#include "menu_view.h"
 
-View::View(std::vector<User> const& user_ranking)
+
+MenuView::MenuView(std::vector<User> const& user_ranking)
     : user_ranking_(user_ranking)
 {
-  system("mode con: cols=44 lines=27");
+  system("mode con: cols=44 lines=23");
   system("color f1");
 }
 
 
-Menu View::openMenuView() const
+Menu MenuView::openMenuView() const
 {
   char input;
   Menu selected_menu = Start;
@@ -30,9 +31,8 @@ Menu View::openMenuView() const
   }
 }
 
-std::string View::openInputNameView() const
+std::string MenuView::openInputNameView() const
 {
-
   char input;
   std::string user_name;
   printNameInputView("");
@@ -53,12 +53,8 @@ std::string View::openInputNameView() const
   }
 }
 
-void View::setUserRanking(std::vector<User> const& user_ranking) const
-{
 
-}
-
-void View::printHeader() const
+void MenuView::printHeader() const
 {
   std::cout << "############################################";
   std::cout << "#    @@@@@ @@@@@ @@@@@ @@@@   @@@  @@@     #";
@@ -71,47 +67,48 @@ void View::printHeader() const
   std::cout << "#                                          #";
 }
 
-void View::printFooter() const
+void MenuView::printFooter() const
 {
   std::cout << "#                                          #";
   std::cout << "#         *Press ENTER to continue*        #";
   std::cout << "############################################";
 }
 
-void View::printUserRanking() const
+void MenuView::printUserRanking() const
 {
   std::cout << "#                                          #";
   std::cout << "#                                          #";
   std::cout << "#                                          #";
   std::cout << "#                                          #";
   std::cout << "#                                          #";
-  for (unsigned int i = 0; i < user_ranking_.size(); i++)
+  for (unsigned int i = 0; i < 3; i++)
   {
-    if (i == 3) break;
-    std::string user_name = user_ranking_.at(i).getUserName();
-    int user_score = user_ranking_.at(i).getUserScore();
-    int user_name_length = user_name.length();
-    int user_score_length = 0;
-    while (user_score != 0)
+    if (i >= user_ranking_.size())
     {
-      user_score /= 10;
-      user_score_length++;
+      std::cout << "#                                          #";
     }
-    std::cout << "# ";
-    std::cout << i << ". " << user_name << " -> " << user_score;
-    for (int i = 0; i < 33 - user_name_length + user_score_length; i++)
-      std::cout << " ";
-    std::cout << "#";
-  }
-
-  for (unsigned int i = 0; i < 3 - user_ranking_.size(); i++)
-  {
-    std::cout << "#                  te                      #";
+    else
+    {
+      std::string user_name = user_ranking_.at(i).getUserName();
+      int user_score = user_ranking_.at(i).getUserScore();
+      int user_name_length = user_name.length();
+      int user_score_length = 0;
+      while (user_score != 0)
+      {
+        user_score /= 10;
+        user_score_length++;
+      }
+      std::cout << "# ";
+      std::cout << i << ". " << user_name << " -> " << user_score;
+      for (int i = 0; i < 33 - user_name_length + user_score_length; i++)
+        std::cout << " ";
+      std::cout << "#";
+    }
   }
 }
 
 
-void View::printNameInputView(std::string user_name) const
+void MenuView::printNameInputView(std::string user_name) const
 {
   system("cls");
   printHeader();
@@ -123,7 +120,7 @@ void View::printNameInputView(std::string user_name) const
   printFooter();
 }
 
-void View::printMenuView(Menu selected_menu) const
+void MenuView::printMenuView(Menu selected_menu) const
 {
   system("cls");
   printHeader();
