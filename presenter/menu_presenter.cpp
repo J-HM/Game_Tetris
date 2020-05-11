@@ -7,17 +7,31 @@
 
 
 MenuPresenter::MenuPresenter()
-    : view_(new MenuView(user_ranking_))
+    : Presenter("메뉴프리젠터!"),
+      view_(new MenuView(user_ranking_))
 {
-  presentMenuView();
+  std::cout << "메뉴프리젠터에서 생성자 호출" << std::endl;
+  Sleep(2000);
 }
 
 MenuPresenter::~MenuPresenter()
 {
-  delete view_;
-  system("cls");
-  std::cout << "Menu Presenter Deleted." << std::endl;
-  Sleep(1000);
+  std::cout << "메뉴프리젠터에서 소멸자 호출" << std::endl;
+  Sleep(2000);
+}
+
+void MenuPresenter::onCreate()
+{
+  std::cout << "메뉴프리젠터에서 onCreate() 호출" << std::endl;
+  Sleep(2000);
+  presentMenuView();
+}
+
+void MenuPresenter::onResume()
+{
+  std::cout << "메뉴프리젠터에서 onResume() 호출" << std::endl;
+  Sleep(2000);
+  presentMenuView();
 }
 
 void MenuPresenter::presentMenuView()
@@ -28,14 +42,25 @@ void MenuPresenter::presentMenuView()
     if (selected_menu == Start)
     {
       std::string user_name = view_->openInputNameView();
-      pushPresenter(new GamePresenter);
-//      user_ranking_.push_back(User(user_name, user_score));
-//      sort(user_ranking_.begin(), user_ranking_.end());
+      Presenter* game_presenter = new GamePresenter;
+      pushPresenter(game_presenter);
     }
     else if (selected_menu == End)
     {
       popPresenter();
-      break;
     }
   }
+}
+
+void MenuPresenter::onPause()
+{
+  std::cout << "메뉴프리젠터에서 onPause() 호출" << std::endl;
+  Sleep(2000);
+}
+
+void MenuPresenter::onDestroy()
+{
+  std::cout << "메뉴프리젠터에서 onDestroy() 호출" << std::endl;
+  Sleep(2000);
+  delete view_;
 }

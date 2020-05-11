@@ -7,6 +7,12 @@ class GamePresenter : public Presenter
 {
 public:
   GamePresenter();
+  ~GamePresenter();
+
+  virtual void onCreate();
+  virtual void onResume();
+  virtual void onPause();
+  virtual void onDestroy();
 
 private:
 

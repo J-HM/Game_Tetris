@@ -13,9 +13,14 @@ public:
   MenuPresenter();
   ~MenuPresenter();
 
+  virtual void onCreate();
+  virtual void onResume();
+  virtual void onPause();
+  virtual void onDestroy();
+
 private:
   void presentMenuView();
-  
+
 private:
   MenuView* view_;
   std::vector<User> user_ranking_;
