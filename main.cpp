@@ -1,10 +1,9 @@
+#include "presenter/lobby_presenter.h"
 #include "presenter/presenter.h"
-#include "presenter/menu_presenter.h"
 
 int main()
 {
-  Presenter* menu_presenter = new MenuPresenter();
+  Presenter* menu_presenter = new LobbyPresenter();
   menu_presenter->onCreate();
-  delete menu_presenter;
   return 0;
 }

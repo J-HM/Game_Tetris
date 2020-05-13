@@ -1,28 +1,27 @@
-#ifndef MENU_PRESENTER_H
-#define MENU_PRESENTER_H
+#ifndef LOBBY_PRESENTER_H
+#define LOBBY_PRESENTER_H
 
 #include <string>
 #include <vector>
 #include "presenter.h"
 #include "../model/user/user.h"
-#include "../view/menu_view.h"
+#include "../view/lobby_view.h"
 
-class MenuPresenter : public Presenter
+class LobbyPresenter : public Presenter
 {
 public:
-  MenuPresenter();
-  ~MenuPresenter();
+  LobbyPresenter();
+  ~LobbyPresenter();
 
   virtual void onCreate();
   virtual void onResume();
   virtual void onPause();
-  virtual void onDestroy();
 
 private:
   void presentMenuView();
 
 private:
-  MenuView* view_;
+  LobbyView* lobby_view_;
   std::vector<User> user_ranking_;
 };
 

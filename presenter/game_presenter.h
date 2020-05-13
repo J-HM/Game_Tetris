@@ -12,7 +12,6 @@ public:
   virtual void onCreate();
   virtual void onResume();
   virtual void onPause();
-  virtual void onDestroy();
 
 private:
 

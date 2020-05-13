@@ -10,11 +10,12 @@
 
 enum Menu { Start, End };
 
-class MenuView
+class LobbyView
 {
 public:
-  MenuView(std::vector<User> const& user_ranking);
+  LobbyView(std::vector<User> const& user_ranking);
   Menu openMenuView() const;
+  void openEndView() const;
   std::string openInputNameView() const;
 
 private:

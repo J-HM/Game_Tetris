@@ -1,11 +1,12 @@
+#include "lobby_view.h"
+
 #include <iostream>
 #include <conio.h>
 #include <windows.h>
 
-#include "menu_view.h"
 
 
-MenuView::MenuView(std::vector<User> const& user_ranking)
+LobbyView::LobbyView(std::vector<User> const& user_ranking)
     : user_ranking_(user_ranking)
 {
   system("mode con: cols=44 lines=23");
@@ -13,7 +14,7 @@ MenuView::MenuView(std::vector<User> const& user_ranking)
 }
 
 
-Menu MenuView::openMenuView() const
+Menu LobbyView::openMenuView() const
 {
   char input;
   Menu selected_menu = Start;
@@ -31,7 +32,14 @@ Menu MenuView::openMenuView() const
   }
 }
 
-std::string MenuView::openInputNameView() const
+void LobbyView::openEndView() const
+{
+  system("cls");
+  std::cout << "게임을 종료합니다." << std::endl;
+  Sleep(1000);
+}
+
+std::string LobbyView::openInputNameView() const
 {
   char input;
   std::string user_name;
@@ -54,7 +62,7 @@ std::string MenuView::openInputNameView() const
 }
 
 
-void MenuView::printHeader() const
+void LobbyView::printHeader() const
 {
   std::cout << "############################################";
   std::cout << "#    @@@@@ @@@@@ @@@@@ @@@@   @@@  @@@     #";
@@ -67,14 +75,14 @@ void MenuView::printHeader() const
   std::cout << "#                                          #";
 }
 
-void MenuView::printFooter() const
+void LobbyView::printFooter() const
 {
   std::cout << "#                                          #";
   std::cout << "#         *Press ENTER to continue*        #";
   std::cout << "############################################";
 }
 
-void MenuView::printUserRanking() const
+void LobbyView::printUserRanking() const
 {
   std::cout << "#                                          #";
   std::cout << "#                                          #";
@@ -108,7 +116,7 @@ void MenuView::printUserRanking() const
 }
 
 
-void MenuView::printNameInputView(std::string user_name) const
+void LobbyView::printNameInputView(std::string user_name) const
 {
   system("cls");
   printHeader();
@@ -120,7 +128,7 @@ void MenuView::printNameInputView(std::string user_name) const
   printFooter();
 }
 
-void MenuView::printMenuView(Menu selected_menu) const
+void LobbyView::printMenuView(Menu selected_menu) const
 {
   system("cls");
   printHeader();
