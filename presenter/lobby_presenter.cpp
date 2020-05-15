@@ -1,9 +1,5 @@
 #include "lobby_presenter.h"
 
-#include <algorithm>
-#include <iostream>
-#include <Windows.h>
-
 #include "game_presenter.h"
 
 
@@ -30,19 +26,17 @@ void LobbyPresenter::onResume()
 
 void LobbyPresenter::presentMenuView()
 {
-  while(true)
+  Menu selected_menu = lobby_view_->openMenuView();
+
+  if (selected_menu == Start)
   {
-    Menu selected_menu = lobby_view_->openMenuView();
-    if (selected_menu == Start)
-    {
-      std::string user_name = lobby_view_->openInputNameView();
-      Presenter* game_presenter = new GamePresenter;
-      pushPresenter(game_presenter);
-    }
-    else if (selected_menu == End)
-    {
-      popPresenter();
-    }
+    std::string user_name = lobby_view_->openInputNameView();
+    Presenter* game_presenter = new GamePresenter;
+    pushPresenter(game_presenter);
+  }
+  else if (selected_menu == End)
+  {
+    popPresenter();
   }
 }
 

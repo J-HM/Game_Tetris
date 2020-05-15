@@ -5,14 +5,12 @@
 #include <windows.h>
 
 
-
 LobbyView::LobbyView(std::vector<User> const& user_ranking)
     : user_ranking_(user_ranking)
 {
   system("mode con: cols=44 lines=23");
   system("color f1");
 }
-
 
 Menu LobbyView::openMenuView() const
 {

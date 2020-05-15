@@ -15,7 +15,7 @@ public:
   virtual void onResume() = 0;
   virtual void onPause() = 0;
 
-private:
+public:
   Presenter* next_presenter_;
   Presenter* prev_presenter_;
 };

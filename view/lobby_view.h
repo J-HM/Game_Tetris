@@ -14,6 +14,7 @@ class LobbyView
 {
 public:
   LobbyView(std::vector<User> const& user_ranking);
+
   Menu openMenuView() const;
   void openEndView() const;
   std::string openInputNameView() const;

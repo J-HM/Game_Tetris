@@ -9,6 +9,8 @@ Presenter::Presenter()
 
 Presenter::~Presenter()
 {
+  next_presenter_ = nullptr;
+  prev_presenter_ = nullptr;
 }
 
 void Presenter::pushPresenter(Presenter* next_presenter)
@@ -26,7 +28,8 @@ void Presenter::popPresenter()
   if (this->prev_presenter_ != nullptr)
   {
     Presenter* prev_presenter = this->prev_presenter_;
-    this->prev_presenter_->next_presenter_ = nullptr;
+    this->prev_presenter_ = nullptr;
+    prev_presenter->next_presenter_ = nullptr;
     delete this;
     prev_presenter->onResume();
   }

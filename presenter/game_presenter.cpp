@@ -1,5 +1,6 @@
 #include <iostream>
 #include <conio.h>
+#include <windows.h>
 
 #include "game_presenter.h"
 
@@ -28,6 +29,7 @@ void GamePresenter::onCreate()
       if (input == 13)
       {
         popPresenter();
+        break;
       }
       if (input == 72) std::cout << "wow";
       if (input == 80) std::cout << "Good";
