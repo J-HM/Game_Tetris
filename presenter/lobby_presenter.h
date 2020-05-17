@@ -3,9 +3,11 @@
 
 #include <string>
 #include <vector>
+
 #include "presenter.h"
 #include "../model/user/user.h"
 #include "../view/lobby_view.h"
+
 
 class LobbyPresenter : public Presenter
 {

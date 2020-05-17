@@ -1,6 +1,5 @@
 #include "presenter/lobby_presenter.h"
 #include "presenter/presenter.h"
-#include <crtdbg.h>
 
 int main()
 {

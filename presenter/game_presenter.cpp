@@ -5,36 +5,22 @@
 #include "game_presenter.h"
 
 GamePresenter::GamePresenter()
+    : game_view_(new GameView())
 {
-
 }
 
 
 GamePresenter::~GamePresenter()
 {
-
+  delete game_view_;
 }
 
 
 void GamePresenter::onCreate()
 {
+  game_view_->openGameView();
 
-
-  char input;
-  while(true)
-  {
-    if(kbhit())
-    {
-      input = getch();
-      if (input == 13)
-      {
-        popPresenter();
-        break;
-      }
-      if (input == 72) std::cout << "wow";
-      if (input == 80) std::cout << "Good";
-    }
-  }
+  popPresenter();
 }
 
 

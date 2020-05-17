@@ -2,6 +2,7 @@
 #define GAME_PRESENTER_H
 
 #include "presenter.h"
+#include "../view/game_view.h"
 
 class GamePresenter : public Presenter
 {
@@ -14,7 +15,7 @@ public:
   virtual void onPause();
 
 private:
-
+  GameView* game_view_;
 
 };
 

@@ -4,6 +4,9 @@
 class GameView
 {
 public:
+  GameView();
+
+  void openGameView() const;
 
 private:
 
