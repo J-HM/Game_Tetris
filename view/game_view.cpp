@@ -1,62 +1,77 @@
 #include "game_view.h"
 
-#include <array>
 
 using namespace sf;
 using std::array;
 
 GameView::GameView()
+    : game_window_(new RenderWindow(VideoMode(500, 500), "Hello Tetris")),
+      game_board_(new Board()),
+      is_paused_(false)
 {
 }
 
-void GameView::openGameView() const
+GameView::~GameView()
 {
-  RenderWindow window(VideoMode(500, 500), "Hello Tetris");
+  delete game_window_;
+  delete game_board_;
+}
 
-  RectangleShape* grid_shape = getGridShape();
-
-  array<array<RectangleShape, 10>, 20> grids;
-
-  for (int i = 0; i < 20; i++)
+void GameView::openGameView()
+{
+  while (game_window_->isOpen())
   {
-    for (int j = 0; j < 10; j++)
+    // event process //
+    Event event;
+    while (game_window_->pollEvent(event))
     {
-      RectangleShape grid(Vector2f(grid_length, grid_length));
+      if (event.type == Event::Closed)
+        game_window_->close();
+
+      if (event.type == Event::KeyPressed)
+        if (event.key.code==Keyboard::Escape)
+          is_paused_ = !is_paused_;                  // Pause / Play
+//        else if (event.key.code==Keyboard::Z)
+//          rotate=true;                             // Rotate ACW
+//        else if (event.key.code==Keyboard::C)
+//          rotate=true;                             // Hold
+//        else if (event.key.code==Keyboard::Space)
+//          rotate=true;                             // Hard Drop
+//        else if (event.key.code==Keyboard::Up)
+//          dx=-1;                                   // Rotate CW
+//        else if (event.key.code==Keyboard::Right)
+//          dx=-1;                                   // Move Right
+//        else if (event.key.code==Keyboard::Down)
+//          dx=-1;                                   // Soft Drop
+//        else if (event.key.code==Keyboard::Left)
+//          dx=1;                                    // Move Left
+    }
+
+    // draw precess //
+    game_window_->clear(Color(211, 211, 211));
+
+    if (is_paused_)
+    {
+      continue;
+    }
+
+    drawBoard();
+    game_window_->display();
+  }
+}
+
+void GameView::drawBoard() const
+{
+  for (int i = 0; i < Board::k_board_height; i++)
+  {
+    for (int j = 0; j < Board::k_board_width; j++)
+    {
+      RectangleShape grid(Vector2f(k_grid_length, k_grid_length));
       grid.setFillColor(Color(240, 240, 240));
       grid.setOutlineColor(Color(153, 153, 153));
       grid.setOutlineThickness(1.0);
-      grid.setPosition(grids_offset_x + j * grid_length, grids_offset_y + i * grid_length);
-      grids[i][j] = grid;
+      grid.setPosition(k_grids_offset_x + j * k_grid_length, k_grids_offset_y + i * k_grid_length);
+      game_window_->draw(grid);
     }
   }
-
-  while (window.isOpen())
-  {
-    Event event;
-    while (window.pollEvent(event))
-    {
-      if (event.type == Event::Closed)
-        window.close();
-    }
-
-    window.clear(Color(211, 211, 211));
-    window.draw(*grid_shape);
-
-    for (auto& grid_line : grids)
-      for (auto& grid : grid_line)
-        window.draw(grid);
-
-    window.display();
-  }
-
-  delete grid_shape;
-}
-
-
-RectangleShape* GameView::getGridShape() const
-{
-  RectangleShape* grid_shape = new RectangleShape(Vector2f(200, 400));
-  grid_shape->setFillColor(Color(255, 255, 255));
-  grid_shape->setPosition(grids_offset_x, grids_offset_y);
-  return grid_shape;
 }

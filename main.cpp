@@ -1,9 +1,10 @@
-#include "presenter/lobby_presenter.h"
-#include "presenter/presenter.h"
+#include "view/game_view.h"
+
 
 int main()
 {
-  Presenter* lobby_presenter = new LobbyPresenter();
-  lobby_presenter->onCreate();
+  GameView* game_view = new GameView();
+  game_view->openGameView();
+  delete game_view;
   return 0;
 }

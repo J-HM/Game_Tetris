@@ -1,7 +1,9 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include <vector>
+#include <array>
+
+typedef std::array<std::array<bool, 10>, 20> Grids;
 
 class Board
 {
@@ -11,10 +13,9 @@ public:
 
 public:
   Board();
-  void printBoard() const;
 
 private:
-  std::vector<std::vector<bool>> board;
+  Grids grid;
 
 };
 
