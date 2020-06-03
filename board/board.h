@@ -2,20 +2,21 @@
 #define BOARD_H
 
 #include <array>
+#include "../block/block.h"
 
 typedef std::array<std::array<bool, 10>, 20> Grids;
 
 class Board
 {
 public:
-  static const int k_board_width;
-  static const int k_board_height;
-
-public:
   Board();
 
+  static const int board_width;
+  static const int board_height;
+
 private:
-  Grids grid;
+  Grids grids_;
+  Block active_block_;
 
 };
 

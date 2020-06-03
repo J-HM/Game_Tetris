@@ -10,12 +10,12 @@
 class GameView
 {
 public:
-  static const int k_grid_length = 20;
-  static const int k_grids_offset_x = 150;
-  static const int k_grids_offset_y = 50;
+  static const int grid_length = 20;
+  static const int grids_offset_x = 150;
+  static const int grids_offset_y = 50;
 
 public:
-  GameView();
+  GameView(std::string title);
   ~GameView();
 
   void openGameView();
@@ -23,8 +23,8 @@ public:
 private:
   void drawBoard() const;
 
-  sf::RenderWindow* game_window_;
-  Board* game_board_;
+  sf::RenderWindow* window_;
+  Board* board_;
   bool is_paused_;
 };
 

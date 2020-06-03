@@ -1,8 +1,8 @@
 #include "block.h"
 
-const BlockShapeList Block::k_i_block_shape_list_ =
+const ShapeList Block::i_shape_list_ =
 {
-  { { 0, 0, 0, 0 },
+  {  { 0, 0, 0, 0 },
      { 1, 1, 1, 1 },
      { 0, 0, 0, 0 },
      { 0, 0, 0, 0 }  },
@@ -23,7 +23,7 @@ const BlockShapeList Block::k_i_block_shape_list_ =
      { 0, 1, 0, 0 }  }
 };
 
-const BlockShapeList Block::k_j_block_shape_list_ =
+const ShapeList Block::j_shape_list_ =
 {
   {  { 1, 0, 0 },
      { 1, 1, 1 },
@@ -42,7 +42,7 @@ const BlockShapeList Block::k_j_block_shape_list_ =
      { 1, 1, 0 },  }
 };
 
-const BlockShapeList Block::k_l_block_shape_list_ =
+const ShapeList Block::l_shape_list_ =
 {
   {  { 0, 0, 1 },
      { 1, 1, 1 },
@@ -61,7 +61,7 @@ const BlockShapeList Block::k_l_block_shape_list_ =
      { 0, 1, 0 },  }
 };
 
-const BlockShapeList Block::k_o_block_shape_list_ =
+const ShapeList Block::o_shape_list_ =
 {
   {  { 0, 1, 1, 0 },
      { 0, 1, 1, 0 },

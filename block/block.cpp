@@ -1,42 +1,27 @@
 #include "block.h"
 #include <iostream>
 
-Block::Block(const BlockShapeList& k_block_shape_list)
-    : k_block_shape_(&k_block_shape_list.at(0)),
-      block_shape_type_(0),
-      k_block_shape_list_(k_block_shape_list),
+Block::Block(const ShapeList& block_shape_list)
+    : shape_list_(block_shape_list),
+      shape_type_(),
+      position_x_(0),
+      position_y_(0),
+      width_(block_shape_list.at(0).at(0).size()),
+      height_(block_shape_list.at(0).size()),
       is_focusing_(false)
-
-{ }
+{
+}
 
 void Block::rotateBlock(Rotation rotation)
 {
   if (rotation == Rotation::CW)
-    block_shape_type_.rotateCw();
+    shape_type_.rotateCw();
   else if (rotation == Rotation::ACW)
-    block_shape_type_.rotateAcw();
-  else
-    std::cout << "Error: Rotate with wrong direction" << std::endl;
-  k_block_shape_ = &k_block_shape_list_.at(block_shape_type_.getIndex());
+    shape_type_.rotateAcw();
 }
 
-
-// TEST CODE
-void Block::printBlock()
+void Block::setPosition(int x, int y)
 {
-  for (unsigned int i = 0; i < k_block_shape_ -> size(); i++)
-  {
-    for (unsigned int j = 0; j < k_block_shape_ -> at(i).size(); j++)
-    {
-      if (k_block_shape_->at(i).at(j))
-      {
-        std::cout << "0";
-      }
-      else
-      {
-        std::cout << "-";
-      }
-    }
-    std::cout << std::endl;
-  }
+  position_x_ = x;
+  position_y_ = y;
 }

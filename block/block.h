@@ -2,37 +2,47 @@
 #define BLOCK_H
 
 #include <vector>
+#include <iostream> // for test code
 
-#include "../direction/rotation/rotation.h"
-#include "../direction/shifting/shifting.h"
-#include "block_shape_type.h"
+#include "direction/rotation/rotation.h"
+#include "direction/shifting/shifting.h"
+#include "shape_type.h"
 
-typedef std::vector<std::vector<bool>> BlockShape;
 
-typedef std::vector<BlockShape> BlockShapeList;
+typedef std::vector<std::vector<bool>> Shape;
+typedef std::vector<Shape> ShapeList;
+
 
 
 class Block
 {
 public:
-  Block(const BlockShapeList& k_block_shape_list);
+  Block(const ShapeList& k_block_shape_list);
 
   void rotateBlock(Rotation rotation);
   void moveBlock(Shifting shifting);
-  void printBlock();
+  void setPosition(int x, int y);
 
-protected:
-  const BlockShape* k_block_shape_;
-  BlockShapeType block_shape_type_; // 0(default), 1, 2, 3
+  const static ShapeList i_shape_list_;
+  const static ShapeList j_shape_list_;
+  const static ShapeList l_shape_list_;
+  const static ShapeList o_shape_list_;
+
+  // test code //
+  void printInfo()
+  {
+    std::cout << "x:" << position_x_ << " y: " << position_y_ << std::endl;
+    std::cout << "width:" << width_ << " height: " << height_ << std::endl;
+  }
+  // test code //
 
 private:
-  const BlockShapeList& k_block_shape_list_;
-  bool is_focusing_;
+  const ShapeList& shape_list_;
+  ShapeType shape_type_; // 0(default), 1, 2, 3
 
-  const static BlockShapeList k_i_block_shape_list_;
-  const static BlockShapeList k_j_block_shape_list_;
-  const static BlockShapeList k_l_block_shape_list_;
-  const static BlockShapeList k_o_block_shape_list_;
+  int position_x_, position_y_;
+  int width_, height_;
+  bool is_focusing_;
 };
 
 
