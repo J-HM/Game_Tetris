@@ -5,12 +5,12 @@ Shifting::Shifting(const Value& value)
 {
 }
 
-const bool Shifting::operator==(Shifting& location) const
+const bool Shifting::operator==(const Value& value) const
 {
-  return value_ == location.value_;
+  return value_ == value;
 }
 
-const bool Shifting::operator!=(Shifting& location) const
+const bool Shifting::operator!=(const Value& value) const
 {
-  return value_ != location.value_;
+  return value_ != value;
 }

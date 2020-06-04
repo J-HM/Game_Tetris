@@ -9,15 +9,24 @@ typedef std::array<std::array<bool, 10>, 20> Grids;
 class Board
 {
 public:
-  Board();
-
   static const int board_width;
   static const int board_height;
 
+  Board();
+  ~Board();
+
+  void holdBlock();
+  void moveBlockRight();
+  void moveBlockLeft();
+  void rotateBlockCW();
+  void rotateBlockACW();
+  void dropBlockHard();
+  void dropBlockSoft();
+
 private:
   Grids grids_;
-  Block active_block_;
-
+  Block* active_block_;
+  Block* holded_block_;
 };
 
 #endif

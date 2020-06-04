@@ -1,5 +1,5 @@
 #include "block.h"
-#include <iostream>
+
 
 Block::Block(const ShapeList& block_shape_list)
     : shape_list_(block_shape_list),
@@ -12,6 +12,11 @@ Block::Block(const ShapeList& block_shape_list)
 {
 }
 
+void Block::swapBlock(Block* block)
+{
+  //TODO implement
+}
+
 void Block::rotateBlock(Rotation rotation)
 {
   if (rotation == Rotation::CW)
@@ -20,8 +25,33 @@ void Block::rotateBlock(Rotation rotation)
     shape_type_.rotateAcw();
 }
 
+void Block::moveBlock(const Shifting shifting)
+{
+
+  if (shifting == Shifting::RIGHT)
+  {
+    std::cout << "In shifting function :right " << std::endl;
+    position_x_++;
+  }
+  else if (shifting == Shifting::LEFT)
+  {
+    std::cout << "In shifting function :right " << std::endl;
+    position_x_--;
+  }
+}
+
 void Block::setPosition(int x, int y)
 {
   position_x_ = x;
   position_y_ = y;
+}
+
+int Block::getPositionX()
+{
+  return position_x_;
+}
+
+int Block::getPositionY()
+{
+  return position_y_;
 }
