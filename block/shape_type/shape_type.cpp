@@ -1,6 +1,7 @@
 #include "shape_type.h"
 
-ShapeType::ShapeType(int shape_type)
+
+ShapeType::ShapeType(short int shape_type)
     : shape_type_(shape_type)
 {
 }
@@ -8,8 +9,7 @@ ShapeType::ShapeType(int shape_type)
 void ShapeType::rotateCw()
 {
   shape_type_++;
-  if (shape_type_ > 4) shape_type_ = 0;
-
+  if (shape_type_ > 3) shape_type_ = 0;
 }
 
 void ShapeType::rotateAcw()
@@ -18,7 +18,7 @@ void ShapeType::rotateAcw()
   if (shape_type_ < 0) shape_type_ = 3;
 }
 
-const int& ShapeType::getIndex() const
+const short int& ShapeType::getIndex() const
 {
   return shape_type_;
 }

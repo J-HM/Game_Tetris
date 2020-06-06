@@ -1,10 +1,10 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include <array>
+#include <vector>
+#include <functional>
 #include "../block/block.h"
-
-typedef std::array<std::array<bool, 10>, 20> Grids;
+#include "fragment/fragment.h"
 
 class Board
 {
@@ -18,15 +18,17 @@ public:
   void holdBlock();
   void moveBlockRight();
   void moveBlockLeft();
-  void rotateBlockCW();
-  void rotateBlockACW();
+  void rotateBlockCw();
+  void rotateBlockAcw();
   void dropBlockHard();
   void dropBlockSoft();
 
+  void drawActiveBlock(std::function<void(int, int)> drawCell);
+
 private:
-  Grids grids_;
   Block* active_block_;
   Block* holded_block_;
+  std::vector<Fragment> fragments_;
 };
 
 #endif

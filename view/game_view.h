@@ -15,15 +15,14 @@ public:
   static const int grids_offset_y = 50;
 
 public:
-  GameView(std::string title);
+  GameView();
   ~GameView();
 
-  void openGameView();
+  void openGameView(std::string title);
 
 private:
-  void drawBoard() const;
+  void drawDefaultBackground(sf::RenderWindow& window) const;
 
-  sf::RenderWindow* window_;
   Board* board_;
   bool is_paused_;
 };

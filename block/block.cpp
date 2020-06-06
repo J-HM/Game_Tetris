@@ -1,15 +1,23 @@
 #include "block.h"
 
 
-Block::Block(const ShapeList& block_shape_list)
-    : shape_list_(block_shape_list),
-      shape_type_(),
-      position_x_(0),
+Block::Block(const Shape& shape)
+    : shape_(shape),
+      shape_type_(0),
+      position_x_(5),
       position_y_(0),
-      width_(block_shape_list.at(0).at(0).size()),
-      height_(block_shape_list.at(0).size()),
       is_focusing_(false)
 {
+}
+
+const Block::Shape& Block::getShape() const
+{
+  return shape_;
+}
+
+const ShapeType& Block::getShapeType() const
+{
+  return shape_type_;
 }
 
 void Block::swapBlock(Block* block)
@@ -27,17 +35,10 @@ void Block::rotateBlock(Rotation rotation)
 
 void Block::moveBlock(const Shifting shifting)
 {
-
   if (shifting == Shifting::RIGHT)
-  {
-    std::cout << "In shifting function :right " << std::endl;
     position_x_++;
-  }
   else if (shifting == Shifting::LEFT)
-  {
-    std::cout << "In shifting function :right " << std::endl;
     position_x_--;
-  }
 }
 
 void Block::setPosition(int x, int y)
