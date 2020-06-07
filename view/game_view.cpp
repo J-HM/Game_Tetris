@@ -1,81 +1,86 @@
 #include "game_view.h"
 
-
 using namespace sf;
 using std::array;
 
-GameView::GameView()
-    : board_(new Board()),
-      is_paused_(false)
+GameView::GameView(std::string title)
+    : window_(new RenderWindow(VideoMode(500, 500), title, Style::Close)),
+      board_(new Board())
 {
 }
 
 GameView::~GameView()
 {
+  delete window_;
   delete board_;
 }
 
-void GameView::openGameView(std::string title)
+void GameView::openGameView()
 {
-  sf::RenderWindow window(VideoMode(500, 500), title, Style::Close);
-
-
-
-  while (window.isOpen())
+  bool is_paused;
+  while (window_->isOpen())
   {
     // event process //
     Event event;
-    while (window.pollEvent(event))
+    while (window_->pollEvent(event))
     {
       if (event.type == Event::Closed)
-        window.close();
+        window_->close();
       if (event.type == Event::KeyPressed)
       {
         if (event.key.code == Keyboard::Escape)
-          is_paused_ = !is_paused_; // Pause / Play
+          is_paused = !is_paused; // Pause / Play
         else if (event.key.code == Keyboard::Z)
-          board_->rotateBlockAcw(); // Rotate ACW
+          board_->rotateActiveBlockAcw(); // Rotate ACW
         else if (event.key.code == Keyboard::C)
-          board_->holdBlock();      // Hold Block
+          board_->holdActiveBlock();      // Hold Block
         else if (event.key.code == Keyboard::Space)
-          board_->dropBlockHard();  // Hard Drop
+          board_->dropActiveBlockHard();  // Hard Drop
         else if (event.key.code == Keyboard::Up)
-          board_->rotateBlockCw();  // Rotate CW
+          board_->rotateActiveBlockCw();  // Rotate CW
         else if (event.key.code == Keyboard::Right)
-          board_->moveBlockRight(); // Move Right
+          board_->moveActiveBlockRight(); // Move Right
         else if (event.key.code == Keyboard::Down)
-          board_->dropBlockSoft();  // Soft Drop
+          board_->dropActiveBlockSoft();  // Soft Drop
         else if (event.key.code == Keyboard::Left)
-          board_->moveBlockLeft();  // Move Left
+          board_->moveActiveBlockLeft();  // Move Left
       }
     }
     // board precess //
 
     // draw precess //
-    window.clear(Color(221, 221, 221));
-    drawDefaultBackground(window);
+    window_->clear(Color(221, 221, 221));
+    drawBackground();
 
-    if (is_paused_)
+    if (is_paused)
     {
       continue;
     }
 
-    board_->drawActiveBlock([&window] (int x, int y) {
-      RectangleShape grid(Vector2f(grid_length, grid_length));
-      grid.setFillColor(Color(108, 18, 248));
-      grid.setOutlineColor(Color(153, 153, 153));
-      grid.setOutlineThickness(1.0);
-      int position_x = grids_offset_x + x * grid_length;
-      int position_y = grids_offset_y + y * grid_length;
-      grid.setPosition(position_x, position_y);
-      window.draw(grid);
-    });
+    drawActiveBlock();
 
-    window.display();
+    window_->display();
   }
 }
 
-void GameView::drawDefaultBackground(sf::RenderWindow& window) const
+void GameView::drawActiveBlock() const
+{
+  RectangleShape grid(Vector2f(grid_length, grid_length));
+  grid.setFillColor(Color(108, 18, 248));
+  grid.setOutlineColor(Color(123, 123, 123));
+  grid.setOutlineThickness(0.8);
+  int block_position_x = board_->getActiveBlockPositionX();
+  int block_position_y = board_->getActiveBlockPositionY();
+
+  board_->doForEachBlockCell([&] (int x, int y) {
+    int position_x = grids_offset_x + (block_position_x + x) * grid_length;
+    int position_y = grids_offset_y + (block_position_y + y) * grid_length;
+    grid.setPosition(position_x, position_y);
+    window_->draw(grid);
+  });
+}
+
+void GameView::drawBackground() const
 {
   RectangleShape grid(Vector2f(grid_length, grid_length));
   grid.setFillColor(Color(248, 248, 248));
@@ -88,7 +93,7 @@ void GameView::drawDefaultBackground(sf::RenderWindow& window) const
       int position_x = grids_offset_x + j * grid_length;
       int position_y = grids_offset_y + i * grid_length;
       grid.setPosition(position_x, position_y);
-      window.draw(grid);
+      window_->draw(grid);
     }
   }
 }

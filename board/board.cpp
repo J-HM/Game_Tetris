@@ -7,8 +7,8 @@ const int Board::board_width = 10;
 const int Board::board_height = 20;
 
 Board::Board()
-    : active_block_(new Block(Block::I)),
-      holded_block_(new Block(Block::J)),
+    : active_block_(new Block(Block::getRandomShape())),
+      holded_block_(new Block(Block::EMPTY)),
       fragments_()
 {
   active_block_->printInfo();
@@ -20,14 +20,14 @@ Board::~Board()
   delete holded_block_;
 }
 
-void Board::holdBlock()
+void Board::holdActiveBlock()
 {
   active_block_->swapBlock(holded_block_);
   std::cout << "Hold block" << std::endl;
   active_block_->printInfo();
 }
 
-void Board::moveBlockRight()
+void Board::moveActiveBlockRight()
 {
   // Check position is < 20
   active_block_->moveBlock(Shifting::RIGHT);
@@ -35,7 +35,7 @@ void Board::moveBlockRight()
   active_block_->printInfo();
 }
 
-void Board::moveBlockLeft()
+void Board::moveActiveBlockLeft()
 {
   // Check position is > 0
   active_block_->moveBlock(Shifting::LEFT);
@@ -43,7 +43,7 @@ void Board::moveBlockLeft()
   active_block_->printInfo();
 }
 
-void Board::rotateBlockCw()
+void Board::rotateActiveBlockCw()
 {
   // Check block is overlap with other Block
   active_block_->rotateBlock(Rotation::CW);
@@ -51,7 +51,7 @@ void Board::rotateBlockCw()
   active_block_->printInfo();
 }
 
-void Board::rotateBlockAcw()
+void Board::rotateActiveBlockAcw()
 {
   // Check block is overlap with other Block
   active_block_->rotateBlock(Rotation::ACW);
@@ -59,27 +59,36 @@ void Board::rotateBlockAcw()
   active_block_->printInfo();
 }
 
-void Board::dropBlockHard()
+void Board::dropActiveBlockHard()
 {
   //TODO implement dropHard
 }
 
-void Board::dropBlockSoft()
+void Board::dropActiveBlockSoft()
 {
   //TODO implement dropHard
 }
 
-
-void Board::drawActiveBlock(std::function<void(int, int)> drawCell)
+int Board::getActiveBlockPositionX()
 {
-  ;
-  const auto& shape_list = Block::shpae_list_table_.find(active_block_->getShape())->second;
-  const auto& shape = shape_list.at(active_block_->getShapeType().getIndex());
-  for (const auto& row : shape)
+  return active_block_->getPositionX();
+}
+
+int Board::getActiveBlockPositionY()
+{
+  return active_block_->getPositionY();
+}
+
+void Board::doForEachBlockCell(std::function<void(int, int)> drawCell)
+{
+  auto& shape_list = Block::shpae_list_table_.find(active_block_->getShape())->second;
+  auto& shape = shape_list.at(active_block_->getShapeType().getIndex());
+  for (unsigned int i = 0; i < shape.size(); i++)
   {
-    for (const auto& cell : row)
+    for (unsigned int j = 0; j < shape.at(i).size(); j++)
     {
-      drawCell(active_block_->getPositionX(), active_block_->getPositionY());
+      if (shape.at(i).at(j))
+        drawCell(i, j);
     }
   }
 }

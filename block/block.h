@@ -2,6 +2,8 @@
 #define BLOCK_H
 
 #include <iostream> // for test code
+#include <random>
+#include <chrono>
 #include <vector>
 #include <map>
 
@@ -16,9 +18,11 @@ typedef std::vector<std::vector<std::vector<bool>>> ShapeList;
 class Block
 {
 public:
-  enum Shape: char {X, I, J, L, O}; // X: empty
+  enum Shape: char {EMPTY, I, J, L, O}; // X: empty
 
+  const static Shape getRandomShape();
   const static std::map<Shape, const ShapeList&> shpae_list_table_;
+  const static ShapeList empty_shape_list_;
   const static ShapeList i_shape_list_;
   const static ShapeList j_shape_list_;
   const static ShapeList l_shape_list_;
@@ -32,6 +36,7 @@ public:
   void rotateBlock(Rotation rotation);
   void moveBlock(Shifting shifting);
   void setPosition(int x, int y);
+//  std::vector<std::vector<bool>> getShape();
   int getPositionX();
   int getPositionY();
 
@@ -58,6 +63,11 @@ public:
       case O:
       {
         std::cout << "Shape: O" << std::endl;
+        break;
+      }
+      case EMPTY:
+      {
+        std::cout << "Empty Shape" << std::endl;
         break;
       }
       default:

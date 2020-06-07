@@ -15,15 +15,18 @@ public:
   Board();
   ~Board();
 
-  void holdBlock();
-  void moveBlockRight();
-  void moveBlockLeft();
-  void rotateBlockCw();
-  void rotateBlockAcw();
-  void dropBlockHard();
-  void dropBlockSoft();
+  void holdActiveBlock();
+  void moveActiveBlockRight();
+  void moveActiveBlockLeft();
+  void rotateActiveBlockCw();
+  void rotateActiveBlockAcw();
+  void dropActiveBlockHard();
+  void dropActiveBlockSoft();
 
-  void drawActiveBlock(std::function<void(int, int)> drawCell);
+  int getActiveBlockPositionX();
+  int getActiveBlockPositionY();
+
+  void doForEachBlockCell(std::function<void(int, int)> drawCell);
 
 private:
   Block* active_block_;

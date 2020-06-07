@@ -2,8 +2,8 @@
 
 int main()
 {
-  GameView* game_view = new GameView();
-  game_view->openGameView("Hello Tetris!");
+  GameView* game_view = new GameView("Hello Tetris!");
+  game_view->openGameView();
   delete game_view;
   return 0;
 }
