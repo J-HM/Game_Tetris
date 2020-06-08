@@ -1,16 +1,16 @@
 
 #include "block.h"
 
-Block::Block(const Shape& shape)
-    : shape_type_(0),
+Block::Block(const ShapeType& shape)
+    : shape_index_(0),
       position_x_(5),
       position_y_(0),
-      shape_(shape),
+      shape_type_(shape),
       is_focusing_(false)
 {
 }
 
-const Block::Shape Block::getRandomShape()
+const Block::ShapeType Block::getRandomShape()
 {
   using namespace std::chrono;
   high_resolution_clock::time_point now = high_resolution_clock::now();
@@ -34,16 +34,6 @@ const Block::Shape Block::getRandomShape()
 //  return Block::I;
 }
 
-const Block::Shape& Block::getShape() const
-{
-  return shape_;
-}
-
-const ShapeType& Block::getShapeType() const
-{
-  return shape_type_;
-}
-
 void Block::swapBlock(Block* block)
 {
   //TODO implement
@@ -52,9 +42,9 @@ void Block::swapBlock(Block* block)
 void Block::rotateBlock(Rotation rotation)
 {
   if (rotation == Rotation::CW)
-    shape_type_.rotateCw();
+    shape_index_.rotateCw();
   else if (rotation == Rotation::ACW)
-    shape_type_.rotateAcw();
+    shape_index_.rotateAcw();
 }
 
 void Block::moveBlock(const Shifting shifting)
@@ -71,12 +61,25 @@ void Block::setPosition(int x, int y)
   position_y_ = y;
 }
 
-int Block::getPositionX()
+const int Block::getPositionX() const
 {
   return position_x_;
 }
 
-int Block::getPositionY()
+const int Block::getPositionY() const
 {
   return position_y_;
+}
+
+
+const Shape& Block::getShape() const
+{
+  auto& shape_list = shpae_list_map_.find(shape_type_)->second;
+  auto& shape = shape_list.at(shape_index_.getIndex());
+  return shape;
+}
+
+const Block::ShapeType Block::getShapeType() const
+{
+  return shape_type_;
 }

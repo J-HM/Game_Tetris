@@ -4,7 +4,7 @@ using namespace sf;
 using std::array;
 
 GameView::GameView(std::string title)
-    : window_(new RenderWindow(VideoMode(500, 500), title, Style::Close)),
+    : window_(new RenderWindow(VideoMode(window_width_, window_height_), title, Style::Close)),
       board_(new Board())
 {
 }
@@ -15,7 +15,7 @@ GameView::~GameView()
   delete board_;
 }
 
-void GameView::openGameView()
+void GameView::openGameView() const
 {
   bool is_paused;
   while (window_->isOpen())
@@ -65,16 +65,13 @@ void GameView::openGameView()
 
 void GameView::drawActiveBlock() const
 {
-  RectangleShape grid(Vector2f(grid_length, grid_length));
-  grid.setFillColor(Color(108, 18, 248));
-  grid.setOutlineColor(Color(123, 123, 123));
-  grid.setOutlineThickness(0.8);
+  RectangleShape grid = getCell(board_->getActivBlockShapeType());
   int block_position_x = board_->getActiveBlockPositionX();
   int block_position_y = board_->getActiveBlockPositionY();
 
   board_->doForEachBlockCell([&] (int x, int y) {
-    int position_x = grids_offset_x + (block_position_x + x) * grid_length;
-    int position_y = grids_offset_y + (block_position_y + y) * grid_length;
+    int position_x = grid_offset_x_ + (block_position_x + x) * cell_length_;
+    int position_y = grid_offset_y_ + (block_position_y + y) * cell_length_;
     grid.setPosition(position_x, position_y);
     window_->draw(grid);
   });
@@ -82,18 +79,47 @@ void GameView::drawActiveBlock() const
 
 void GameView::drawBackground() const
 {
-  RectangleShape grid(Vector2f(grid_length, grid_length));
-  grid.setFillColor(Color(248, 248, 248));
-  grid.setOutlineColor(Color(153, 153, 153));
-  grid.setOutlineThickness(1.0);
-  for (int i = 0; i < Board::board_height; i++)
+  RectangleShape grid = getCell(Block::EMPTY);
+  for (int i = 0; i < Board::board_height_; i++)
   {
-    for (int j = 0; j < Board::board_width; j++)
+    for (int j = 0; j < Board::board_width_; j++)
     {
-      int position_x = grids_offset_x + j * grid_length;
-      int position_y = grids_offset_y + i * grid_length;
+      int position_x = grid_offset_x_ + j * cell_length_;
+      int position_y = grid_offset_y_ + i * cell_length_;
       grid.setPosition(position_x, position_y);
       window_->draw(grid);
     }
   }
+}
+
+
+const sf::RectangleShape GameView::getCell(Block::ShapeType shape_type)
+{
+  RectangleShape grid(Vector2f(cell_length_, cell_length_));
+  switch (shape_type)
+  {
+    case Block::EMPTY:
+      grid.setFillColor(Color(243, 243, 243));
+      grid.setOutlineColor(Color(153, 153, 153));
+      break;
+    case Block::I:
+      grid.setFillColor(Color(0, 255, 255));
+      grid.setOutlineColor(Color(0, 127, 127));
+      break;
+    case Block::J:
+      grid.setFillColor(Color(0, 0, 255));
+      grid.setOutlineColor(Color(0, 0, 127));
+      break;
+    case Block::L:
+      grid.setFillColor(Color(255, 127, 0));
+      grid.setOutlineColor(Color(127, 64, 0));
+      break;
+    case Block::O:
+      grid.setFillColor(Color(255, 255, 0));
+      grid.setOutlineColor(Color(127, 127, 0));
+      break;
+  }
+//  grid.setOutlineColor(Color(153, 153, 153));
+  grid.setOutlineThickness(0.7);
+  return grid;
 }

@@ -10,15 +10,19 @@
 class GameView
 {
 public:
-  static const int grid_length = 20;
-  static const int grids_offset_x = 150;
-  static const int grids_offset_y = 50;
+  static const sf::RectangleShape getCell(Block::ShapeType shape);
+
+  static const int cell_length_ = 30;
+  static const int window_width_ = 700;
+  static const int window_height_ = 700;
+  static const int grid_offset_x_ = 100;
+  static const int grid_offset_y_ = 50;
 
 public:
   GameView(std::string title);
   ~GameView();
 
-  void openGameView();
+  void openGameView() const;
 
 private:
   void drawBackground() const;

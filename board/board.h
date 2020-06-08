@@ -9,8 +9,8 @@
 class Board
 {
 public:
-  static const int board_width;
-  static const int board_height;
+  static const int board_width_;
+  static const int board_height_;
 
   Board();
   ~Board();
@@ -23,8 +23,9 @@ public:
   void dropActiveBlockHard();
   void dropActiveBlockSoft();
 
-  int getActiveBlockPositionX();
-  int getActiveBlockPositionY();
+  const int getActiveBlockPositionX() const;
+  const int getActiveBlockPositionY() const;
+  const Block::ShapeType getActivBlockShapeType() const;
 
   void doForEachBlockCell(std::function<void(int, int)> drawCell);
 

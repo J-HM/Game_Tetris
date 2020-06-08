@@ -1,6 +1,6 @@
 #include "block.h"
 
-const std::map<Block::Shape, const ShapeList&> Block::shpae_list_table_ =
+const std::map<Block::ShapeType, const ShapeList&> Block::shpae_list_map_ =
 {
   {Block::EMPTY, Block::empty_shape_list_},
   {Block::I, Block::i_shape_list_},

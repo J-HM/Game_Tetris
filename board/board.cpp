@@ -3,8 +3,8 @@
 #include "board.h"
 
 
-const int Board::board_width = 10;
-const int Board::board_height = 20;
+const int Board::board_width_ = 10;
+const int Board::board_height_ = 20;
 
 Board::Board()
     : active_block_(new Block(Block::getRandomShape())),
@@ -29,9 +29,23 @@ void Board::holdActiveBlock()
 
 void Board::moveActiveBlockRight()
 {
-  // Check position is < 20
+  const auto& shape = active_block_->getShape();
+  bool isOut = false;
+  for (unsigned int i = 0; i < shape.size(); i++)
+  {
+    for (unsigned int j = 0; j < shape.at(i).size(); j++)
+    {
+      if (active_block_->getPositionX() + j > board_width_ - 1)
+      {
+        isOut = true;
+      }
+    }
+  }
+  if (!isOut)
+  {
   active_block_->moveBlock(Shifting::RIGHT);
   std::cout << "Move block Right" << std::endl;
+  }
   active_block_->printInfo();
 }
 
@@ -69,20 +83,24 @@ void Board::dropActiveBlockSoft()
   //TODO implement dropHard
 }
 
-int Board::getActiveBlockPositionX()
+const int Board::getActiveBlockPositionX() const
 {
   return active_block_->getPositionX();
 }
 
-int Board::getActiveBlockPositionY()
+const int Board::getActiveBlockPositionY() const
 {
   return active_block_->getPositionY();
 }
 
+const Block::ShapeType Board::getActivBlockShapeType() const
+{
+  return active_block_->getShapeType();
+}
+
 void Board::doForEachBlockCell(std::function<void(int, int)> drawCell)
 {
-  auto& shape_list = Block::shpae_list_table_.find(active_block_->getShape())->second;
-  auto& shape = shape_list.at(active_block_->getShapeType().getIndex());
+  const auto& shape = active_block_->getShape();
   for (unsigned int i = 0; i < shape.size(); i++)
   {
     for (unsigned int j = 0; j < shape.at(i).size(); j++)
