@@ -49,7 +49,7 @@ void GameView::openGameView() const
     // board precess //
 
     // draw precess //
-    window_->clear(Color(221, 221, 221));
+    window_->clear(Color(191, 191, 191));
     drawBackground();
 
     if (is_paused)
@@ -99,27 +99,22 @@ const sf::RectangleShape GameView::getCell(Block::ShapeType shape_type)
   switch (shape_type)
   {
     case Block::EMPTY:
-      grid.setFillColor(Color(243, 243, 243));
-      grid.setOutlineColor(Color(153, 153, 153));
+      grid.setFillColor(Color(254, 254, 254));
       break;
     case Block::I:
       grid.setFillColor(Color(0, 255, 255));
-      grid.setOutlineColor(Color(0, 127, 127));
       break;
     case Block::J:
       grid.setFillColor(Color(0, 0, 255));
-      grid.setOutlineColor(Color(0, 0, 127));
       break;
     case Block::L:
       grid.setFillColor(Color(255, 127, 0));
-      grid.setOutlineColor(Color(127, 64, 0));
       break;
     case Block::O:
       grid.setFillColor(Color(255, 255, 0));
-      grid.setOutlineColor(Color(127, 127, 0));
       break;
   }
-//  grid.setOutlineColor(Color(153, 153, 153));
-  grid.setOutlineThickness(0.7);
+  grid.setOutlineColor(Color(193, 193, 193));
+  grid.setOutlineThickness(0.6);
   return grid;
 }

@@ -33,6 +33,8 @@ private:
   Block* active_block_;
   Block* holded_block_;
   std::vector<Fragment> fragments_;
+
+  const bool isActiveBlockOut() const;
 };
 
 #endif

@@ -20,6 +20,25 @@ Board::~Board()
   delete holded_block_;
 }
 
+const bool Board::isActiveBlockOut() const
+{
+  const auto& shape = active_block_->getShape();
+  for (unsigned int i = 0; i < shape.size(); i++)
+  {
+    for (unsigned int j = 0; j < shape.at(i).size(); j++)
+    {
+      if (shape.at(i).at(j))
+      {
+        if (active_block_->getPositionX() + j > board_width_ - 1)
+          return true;
+        if (active_block_->getPositionX() + j < 0)
+          return true;
+      }
+    }
+  }
+  return false;
+}
+
 void Board::holdActiveBlock()
 {
   active_block_->swapBlock(holded_block_);
@@ -29,37 +48,24 @@ void Board::holdActiveBlock()
 
 void Board::moveActiveBlockRight()
 {
-  const auto& shape = active_block_->getShape();
-  bool isOut = false;
-  for (unsigned int i = 0; i < shape.size(); i++)
-  {
-    for (unsigned int j = 0; j < shape.at(i).size(); j++)
-    {
-      if (active_block_->getPositionX() + j > board_width_ - 1)
-      {
-        isOut = true;
-      }
-    }
-  }
-  if (!isOut)
-  {
   active_block_->moveBlock(Shifting::RIGHT);
   std::cout << "Move block Right" << std::endl;
-  }
+  if (isActiveBlockOut())
+    active_block_->moveBlock(Shifting::LEFT);
   active_block_->printInfo();
 }
 
 void Board::moveActiveBlockLeft()
 {
-  // Check position is > 0
   active_block_->moveBlock(Shifting::LEFT);
   std::cout << "Move block Left: " << std::endl;
+  if (isActiveBlockOut())
+    active_block_->moveBlock(Shifting::RIGHT);
   active_block_->printInfo();
 }
 
 void Board::rotateActiveBlockCw()
 {
-  // Check block is overlap with other Block
   active_block_->rotateBlock(Rotation::CW);
   std::cout << "Rotate block Left: " << std::endl;
   active_block_->printInfo();
@@ -106,7 +112,7 @@ void Board::doForEachBlockCell(std::function<void(int, int)> drawCell)
     for (unsigned int j = 0; j < shape.at(i).size(); j++)
     {
       if (shape.at(i).at(j))
-        drawCell(i, j);
+        drawCell(j, i); // (x, y)
     }
   }
 }
