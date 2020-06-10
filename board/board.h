@@ -2,6 +2,7 @@
 #define BOARD_H
 
 #include <vector>
+#include <queue>
 #include <functional>
 #include "../block/block.h"
 #include "fragment/fragment.h"
@@ -15,26 +16,34 @@ public:
   Board();
   ~Board();
 
-  void holdActiveBlock();
-  void moveActiveBlockRight();
-  void moveActiveBlockLeft();
-  void rotateActiveBlockCw();
-  void rotateActiveBlockAcw();
-  void dropActiveBlockHard();
-  void dropActiveBlockSoft();
+  void holdABlock();
 
-  const int getActiveBlockPositionX() const;
-  const int getActiveBlockPositionY() const;
-  const Block::ShapeType getActivBlockShapeType() const;
+  void moveABlockRight();
+  void moveABlockLeft();
 
-  void doForEachBlockCell(std::function<void(int, int)> drawCell);
+  void rotateABlockCw();
+  void rotateABlockAcw();
+
+  const bool dropABlockNormal();
+  const bool dropABlockSoft();
+  const bool dropABlockHard();
+
+  const int getABlockPositionX() const;
+  const int getABlockPositionY() const;
+  const Block::ShapeType getABlockShapeType() const;
+
+  void doForEachABlockCell(std::function<void(int, int)> drawCell);
 
 private:
-  Block* active_block_;
-  Block* holded_block_;
+  Block* active_block_; // ABlock
+  Block* holded_block_; // HBlock
+  std::queue<Block> waiting_blocks_; // WBlock
   std::vector<Fragment> fragments_;
 
-  const bool isActiveBlockOut() const;
+
+  enum Wall : char {BETWEEN, RIGHT, LEFT, BOTTOM};
+  const Wall getWallABlockOn() const; // If on wall, return which block.
+  const bool checkABlockOnFragments() const;
 };
 
 #endif

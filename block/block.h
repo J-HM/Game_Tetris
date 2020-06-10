@@ -20,7 +20,7 @@ class Block
 public:
   enum ShapeType: char {EMPTY, I, J, L, O};
 
-  const static ShapeType getRandomShape();
+  const static ShapeType getRandomShape(int multiple = 1);
   const static std::map<ShapeType, const ShapeList&> shpae_list_map_;
   const static ShapeList empty_shape_list_;
   const static ShapeList i_shape_list_;

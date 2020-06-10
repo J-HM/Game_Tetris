@@ -10,13 +10,16 @@ Block::Block(const ShapeType& shape)
 {
 }
 
-const Block::ShapeType Block::getRandomShape()
+const Block::ShapeType Block::getRandomShape(int multiple)
 {
   using namespace std::chrono;
-  high_resolution_clock::time_point now = high_resolution_clock::now();
-  milliseconds ms = duration_cast<milliseconds>(now.time_since_epoch());
-  std::size_t fractional_seconds = ms.count() % 4;
-  std::cout << fractional_seconds << std::endl;
+  auto now = high_resolution_clock::now();
+  auto ns = duration_cast<milliseconds>(now.time_since_epoch());
+
+  std::cout << "ns : " << ns.count() << std::endl;
+  auto fractional_seconds = (ns.count() + multiple) * multiple % 4;
+  // TODO give more Randomness
+  std::cout << "Random : " << fractional_seconds << std::endl;
   switch (fractional_seconds)
   {
     case 0:
@@ -53,6 +56,10 @@ void Block::moveBlock(const Shifting shifting)
     position_x_++;
   else if (shifting == Shifting::LEFT)
     position_x_--;
+  else if (shifting == Shifting::UP)
+    position_y_--;
+  else if (shifting == Shifting::DOWN)
+    position_y_++;
 }
 
 void Block::setPosition(int x, int y)

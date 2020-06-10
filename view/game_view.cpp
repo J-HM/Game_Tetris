@@ -17,40 +17,80 @@ GameView::~GameView()
 
 void GameView::openGameView() const
 {
-  bool is_paused;
+  sf::Clock clock;
+  bool is_paused = false;
+  float game_delay = 0.5;
+  float tick_timer = 0;
+
   while (window_->isOpen())
   {
+    tick_timer += clock.getElapsedTime().asSeconds();
+    clock.restart();
+
     // event process //
     Event event;
     while (window_->pollEvent(event))
     {
       if (event.type == Event::Closed)
+      {
         window_->close();
+      }
       if (event.type == Event::KeyPressed)
       {
-        if (event.key.code == Keyboard::Escape)
-          is_paused = !is_paused; // Pause / Play
-        else if (event.key.code == Keyboard::Z)
-          board_->rotateActiveBlockAcw(); // Rotate ACW
-        else if (event.key.code == Keyboard::C)
-          board_->holdActiveBlock();      // Hold Block
-        else if (event.key.code == Keyboard::Space)
-          board_->dropActiveBlockHard();  // Hard Drop
-        else if (event.key.code == Keyboard::Up)
-          board_->rotateActiveBlockCw();  // Rotate CW
-        else if (event.key.code == Keyboard::Right)
-          board_->moveActiveBlockRight(); // Move Right
-        else if (event.key.code == Keyboard::Down)
-          board_->dropActiveBlockSoft();  // Soft Drop
-        else if (event.key.code == Keyboard::Left)
-          board_->moveActiveBlockLeft();  // Move Left
+        switch (event.key.code)
+        {
+          case Keyboard::Escape:
+            is_paused = !is_paused;         // Pause / Play
+            break;
+          case Keyboard::Z:
+            board_->rotateABlockAcw(); // Rotate ACW
+            break;
+          case Keyboard::C:
+            board_->holdABlock();      // Hold Block
+            break;
+          case Keyboard::Space:
+            board_->dropABlockHard();  // Hard Drop
+            break;
+          case Keyboard::Up:
+            board_->rotateABlockCw();  // Rotate CW
+            break;
+          case Keyboard::Right:
+            board_->moveABlockRight(); // Move Right
+            break;
+          case Keyboard::Down:
+            board_->dropABlockSoft();  // Soft Drop
+            break;
+          case Keyboard::Left:
+            board_->moveABlockLeft();  // Move Left
+            break;
+          default:
+            std::cout << "Warning: Different Key is pressed." << std::endl;
+        }
       }
     }
-    // board precess //
+    // Tick //
+    if (tick_timer > game_delay)
+    {
+      const bool isDropped = board_->dropABlockNormal(); // Move Right
+
+      if (isDropped)
+      {
+        std::cout << "timer : " << tick_timer << std::endl;
+        std::cout << "delay : " << game_delay << std::endl;
+      }
+      else
+      {
+        std::cout << "¹Ù´Ú" << std::endl;
+      }
+      tick_timer = 0;
+    }
+
 
     // draw precess //
     window_->clear(Color(191, 191, 191));
     drawBackground();
+    drawBench();
+    drawWaitingBlock();
 
     if (is_paused)
     {
@@ -65,16 +105,37 @@ void GameView::openGameView() const
 
 void GameView::drawActiveBlock() const
 {
-  RectangleShape grid = getCell(board_->getActivBlockShapeType());
-  int block_position_x = board_->getActiveBlockPositionX();
-  int block_position_y = board_->getActiveBlockPositionY();
+  RectangleShape grid = getCell(board_->getABlockShapeType());
+  int block_position_x = board_->getABlockPositionX();
+  int block_position_y = board_->getABlockPositionY();
 
-  board_->doForEachBlockCell([&] (int x, int y) {
-    int position_x = grid_offset_x_ + (block_position_x + x) * cell_length_;
-    int position_y = grid_offset_y_ + (block_position_y + y) * cell_length_;
+  board_->doForEachABlockCell([&] (int x, int y) {
+    int position_x = board_offset_x_ + (block_position_x + x) * cell_length_;
+    int position_y = board_offset_y_ + (block_position_y + y) * cell_length_;
     grid.setPosition(position_x, position_y);
     window_->draw(grid);
   });
+}
+
+void GameView::drawBench() const
+{
+  RectangleShape grid = getCell(Block::EMPTY);
+  for (int i = 1; i < 15; i++)
+  {
+    for (int j = 0; j < 4; j++)
+    {
+      int position_x = bench_offset_x_ + j * cell_length_;
+      int position_y = bench_offset_y_ + (i - 1) * cell_length_;
+      grid.setPosition(position_x, position_y);
+      window_->draw(grid);
+    }
+    if (i % 5 == 4) i += 1;
+  }
+}
+
+void GameView::drawWaitingBlock() const
+{
+
 }
 
 void GameView::drawBackground() const
@@ -84,14 +145,13 @@ void GameView::drawBackground() const
   {
     for (int j = 0; j < Board::board_width_; j++)
     {
-      int position_x = grid_offset_x_ + j * cell_length_;
-      int position_y = grid_offset_y_ + i * cell_length_;
+      int position_x = board_offset_x_ + j * cell_length_;
+      int position_y = board_offset_y_ + i * cell_length_;
       grid.setPosition(position_x, position_y);
       window_->draw(grid);
     }
   }
 }
-
 
 const sf::RectangleShape GameView::getCell(Block::ShapeType shape_type)
 {
