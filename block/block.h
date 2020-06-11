@@ -7,6 +7,7 @@
 #include <vector>
 #include <map>
 
+#include "position/position.h"
 #include "direction/rotation/rotation.h"
 #include "direction/shifting/shifting.h"
 #include "shape_index/shape_index.h"
@@ -32,17 +33,16 @@ public:
 
   // operate block //
   void swapBlock(Block* block);
-  void rotateBlock(Rotation rotation);
-  void moveBlock(Shifting shifting);
+  void rotateBlock(Rotation direction);
+  void moveBlock(Shifting direction);
 
   // getter //
   const Shape& getShape() const;
-  const ShapeType getShapeType() const;
-  const int getPositionX() const;
-  const int getPositionY() const;
+  const ShapeType& getShapeType() const;
+  const Position& getPosition() const;
 
   // setter //
-  void setPosition(int x, int y);
+  void setPosition(Position& position);
 
   // test code //
   void printInfo() const
@@ -68,13 +68,13 @@ public:
         std::cout << "Error: wrong shape" << std::endl;
     }
     std::cout << "Shape Index: " << shape_index_.getIndex() << std::endl;
-    std::cout << "X:" << position_x_ << " Y: " << position_y_ << std::endl;
+    std::cout << "X:" << position_.x_ << " Y: " << position_.y_ << std::endl;
     std::cout << std::endl;
   }
 
 private:
   ShapeIndex shape_index_; // 0(default), 1, 2, 3
-  short int position_x_, position_y_;
+  Position position_;
   const ShapeType shape_type_;
   bool is_focusing_;
 };

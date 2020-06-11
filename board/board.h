@@ -4,6 +4,7 @@
 #include <vector>
 #include <queue>
 #include <functional>
+
 #include "../block/block.h"
 #include "fragment/fragment.h"
 
@@ -18,21 +19,18 @@ public:
 
   void holdABlock();
 
-  void moveABlockRight();
-  void moveABlockLeft();
+  const bool moveABlock(Shifting::Value direction) const;
+  const bool rotateABlock(Rotation::Value direction) const;
 
-  void rotateABlockCw();
-  void rotateABlockAcw();
-
-  const bool dropABlockNormal();
-  const bool dropABlockSoft();
+  const bool dropABlock();
   const bool dropABlockHard();
 
-  const int getABlockPositionX() const;
-  const int getABlockPositionY() const;
+  const Position& getABlockPosition() const;
   const Block::ShapeType getABlockShapeType() const;
 
-  void doForEachABlockCell(std::function<void(int, int)> drawCell);
+  void loopABlockCell(std::function<void(int, int)> function);
+  void loopHBlockCell(std::function<void(int, int)> function);
+  void loopWBlockCell(std::function<void(int, int)> function);
 
 private:
   Block* active_block_; // ABlock
@@ -44,6 +42,8 @@ private:
   enum Wall : char {BETWEEN, RIGHT, LEFT, BOTTOM};
   const Wall getWallABlockOn() const; // If on wall, return which block.
   const bool checkABlockOnFragments() const;
+
+  void loopBlockCell(Block& block, std::function<void(short int, short int)> function) const;
 };
 
 #endif

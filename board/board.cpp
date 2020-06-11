@@ -23,47 +23,6 @@ Board::~Board()
   delete holded_block_;
 }
 
-const Board::Wall Board::getWallABlockOn() const
-{
-  const auto& shape = active_block_->getShape();
-  for (unsigned int i = 0; i < shape.size(); i++)
-  {
-    for (unsigned int j = 0; j < shape.at(i).size(); j++)
-    {
-      if (shape.at(i).at(j))
-      {
-        if (active_block_->getPositionY() + i == board_height_ - 1)
-          return BOTTOM;
-        if (active_block_->getPositionX() + j == board_width_ - 1)
-          return RIGHT;
-        if (active_block_->getPositionX() + j == 0)
-          return LEFT;
-
-      }
-    }
-  }
-  return BETWEEN;
-}
-
-const bool Board::checkABlockOnFragments() const
-{
-  const auto& shape = active_block_->getShape();
-  for (unsigned int i = 0; i < shape.size(); i++)
-  {
-    for (unsigned int j = 0; j < shape.at(i).size(); j++)
-    {
-      if (shape.at(i).at(j))
-      {
-        if (active_block_->getPositionX() + j == board_width_ - 1)
-          return true;
-        if (active_block_->getPositionX() + j == 0)
-          return true;
-      }
-    }
-  }
-  return false;
-}
-
 void Board::holdABlock()
 {
   active_block_->swapBlock(holded_block_);
@@ -71,44 +30,56 @@ void Board::holdABlock()
   active_block_->printInfo();
 }
 
-void Board::moveABlockRight()
+const bool Board::moveABlock(Shifting::Value direction) const
 {
-  if (getWallABlockOn() != Board::Wall::RIGHT)
+  std::cout << "Move block: " << std::endl;
+  if (direction == Shifting::LEFT)
   {
-    active_block_->moveBlock(Shifting::RIGHT);
-    std::cout << "Move block Right" << std::endl;
-    active_block_->printInfo();
+    if (getWallABlockOn() != Wall::LEFT)
+      active_block_->moveBlock(Shifting::LEFT);
+    else
+      return false;
   }
+  else if (direction == Shifting::RIGHT)
+  {
+    if (getWallABlockOn() != Wall::RIGHT)
+      active_block_->moveBlock(Shifting::RIGHT);
+    else
+      return false;
+  }
+  else
+  {
+    return false;
+  }
+  active_block_->printInfo();
+  return true;
 }
 
-void Board::moveABlockLeft()
+const bool Board::rotateABlock(Rotation::Value direction) const
 {
-  if (getWallABlockOn() != Board::Wall::LEFT)
-  {
-    active_block_->moveBlock(Shifting::LEFT);
-    std::cout << "Move block Left: " << std::endl;
-    active_block_->printInfo();
-  }
-}
-
-void Board::rotateABlockCw()
-{
-  active_block_->rotateBlock(Rotation::CW);
+  // TODO wall kick
   std::cout << "Rotate block Left: " << std::endl;
+  if (direction == Rotation::CW)
+  {
+    active_block_->rotateBlock(Rotation::CW);
+    return true;
+  }
+  else if (direction == Rotation::ACW)
+  {
+    active_block_->rotateBlock(Rotation::ACW);
+    return true;
+  }
+  else
+  {
+    return false;
+  }
   active_block_->printInfo();
 }
 
-void Board::rotateABlockAcw()
-{
-  // Check block is overlap with other Block
-  active_block_->rotateBlock(Rotation::ACW);
-  std::cout << "Rotate block Left" << std::endl;
-  active_block_->printInfo();
-}
 
-const bool Board::dropABlockNormal()
+const bool Board::dropABlock()
 {
-  if (getWallABlockOn() != Board::Wall::BOTTOM)
+  if (getWallABlockOn() != Wall::BOTTOM)
   {
     active_block_->moveBlock(Shifting::DOWN);
     return true;
@@ -119,28 +90,17 @@ const bool Board::dropABlockNormal()
   }
 }
 
-const bool Board::dropABlockSoft()
-{
-  active_block_->moveBlock(Shifting::DOWN);
-  return true;
-  //TODO implement dropHard
-}
-
 const bool Board::dropABlockHard()
 {
   return true;
   //TODO implement dropHard
 }
 
-const int Board::getABlockPositionX() const
+const Position& Board::getABlockPosition() const
 {
-  return active_block_->getPositionX();
+  return active_block_->getPosition();
 }
 
-const int Board::getABlockPositionY() const
-{
-  return active_block_->getPositionY();
-}
 
 const Block::ShapeType Board::getABlockShapeType() const
 {
@@ -148,7 +108,52 @@ const Block::ShapeType Board::getABlockShapeType() const
 }
 
 
-void Board::doForEachABlockCell(std::function<void(int, int)> drawCell)
+void Board::loopABlockCell(std::function<void(int, int)> function)
+{
+  loopBlockCell(*active_block_, [&function](int i, int j){
+    function(j, i);
+  });
+}
+
+void Board::loopABlockCell(std::function<void(int, int)> function)
+{
+  loopBlockCell(*holded_block_, [&function](int i, int j){
+    function(j, i);
+  });
+}
+
+void Board::loopABlockCell(std::function<void(int, int)> function)
+{
+  loopBlockCell(*active_block_, [&function](int i, int j){
+    function(j, i);
+  });
+}
+
+// private //
+const Board::Wall Board::getWallABlockOn() const
+{
+  auto wall_ablock_on = BETWEEN;
+  loopBlockCell(*active_block_, [this, &wall_ablock_on](int i, int j){
+    if (active_block_->getPosition().y_ + i == board_height_ - 1)
+      wall_ablock_on = BOTTOM;
+    if (active_block_->getPosition().x_ + j == board_width_ - 1)
+      wall_ablock_on = RIGHT;
+    if (active_block_->getPosition().x_ + j == 0)
+      wall_ablock_on = LEFT;
+  });
+  return wall_ablock_on;
+}
+
+
+const bool Board::checkABlockOnFragments() const
+{
+  const auto& shape = active_block_->getShape();
+
+  return false;
+}
+
+
+void Board::loopBlockCell(Block& block, std::function<void(short int, short int)> function) const
 {
   const auto& shape = active_block_->getShape();
   for (unsigned int i = 0; i < shape.size(); i++)
@@ -156,7 +161,9 @@ void Board::doForEachABlockCell(std::function<void(int, int)> drawCell)
     for (unsigned int j = 0; j < shape.at(i).size(); j++)
     {
       if (shape.at(i).at(j))
-        drawCell(j, i); // (x, y)
+      {
+        function(i, j);
+      }
     }
   }
 }

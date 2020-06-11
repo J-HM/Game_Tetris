@@ -43,7 +43,7 @@ void GameView::openGameView() const
             is_paused = !is_paused;         // Pause / Play
             break;
           case Keyboard::Z:
-            board_->rotateABlockAcw(); // Rotate ACW
+            board_->rotateABlock(Rotation::ACW); // Rotate ACW
             break;
           case Keyboard::C:
             board_->holdABlock();      // Hold Block
@@ -52,50 +52,49 @@ void GameView::openGameView() const
             board_->dropABlockHard();  // Hard Drop
             break;
           case Keyboard::Up:
-            board_->rotateABlockCw();  // Rotate CW
+            board_->rotateABlock(Rotation::CW);  // Rotate CW
             break;
           case Keyboard::Right:
-            board_->moveABlockRight(); // Move Right
+            board_->moveABlock(Shifting::RIGHT); // Move Right
             break;
           case Keyboard::Down:
-            board_->dropABlockSoft();  // Soft Drop
+            board_->moveABlock(Shifting::DOWN);  // Soft Drop
             break;
           case Keyboard::Left:
-            board_->moveABlockLeft();  // Move Left
+            board_->moveABlock(Shifting::LEFT);  // Move Left
             break;
           default:
             std::cout << "Warning: Different Key is pressed." << std::endl;
         }
       }
     }
+
+    // Pause / Play //
+    if (is_paused) continue;
+
     // Tick //
     if (tick_timer > game_delay)
     {
-      const bool isDropped = board_->dropABlockNormal(); // Move Right
+      const bool isDropping = board_->dropABlock();
 
-      if (isDropped)
+      if (isDropping)
       {
-        std::cout << "timer : " << tick_timer << std::endl;
-        std::cout << "delay : " << game_delay << std::endl;
+        std::cout << "block is floating in the air" << std::endl;
       }
-      else
+      else // ABlock is on fragments or bottom wall
       {
-        std::cout << "¹Ù´Ú" << std::endl;
+        std::cout << "block is on fragments or bottom wall" << std::endl;
       }
       tick_timer = 0;
     }
 
 
-    // draw precess //
+    // Draw precess //
     window_->clear(Color(191, 191, 191));
     drawBackground();
     drawBench();
     drawWaitingBlock();
 
-    if (is_paused)
-    {
-      continue;
-    }
 
     drawActiveBlock();
 
@@ -106,12 +105,11 @@ void GameView::openGameView() const
 void GameView::drawActiveBlock() const
 {
   RectangleShape grid = getCell(board_->getABlockShapeType());
-  int block_position_x = board_->getABlockPositionX();
-  int block_position_y = board_->getABlockPositionY();
+  const Position& block_position = board_->getABlockPosition();
 
-  board_->doForEachABlockCell([&] (int x, int y) {
-    int position_x = board_offset_x_ + (block_position_x + x) * cell_length_;
-    int position_y = board_offset_y_ + (block_position_y + y) * cell_length_;
+  board_->loopABlockCell([&] (int x, int y) {
+    int position_x = board_offset_x_ + (block_position.x_ + x) * cell_length_;
+    int position_y = board_offset_y_ + (block_position.y_ + y) * cell_length_;
     grid.setPosition(position_x, position_y);
     window_->draw(grid);
   });
@@ -131,6 +129,7 @@ void GameView::drawBench() const
     }
     if (i % 5 == 4) i += 1;
   }
+
 }
 
 void GameView::drawWaitingBlock() const

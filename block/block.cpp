@@ -3,8 +3,7 @@
 
 Block::Block(const ShapeType& shape)
     : shape_index_(0),
-      position_x_(5),
-      position_y_(0),
+      position_(Position(0, 0)),
       shape_type_(shape),
       is_focusing_(false)
 {
@@ -16,10 +15,8 @@ const Block::ShapeType Block::getRandomShape(int multiple)
   auto now = high_resolution_clock::now();
   auto ns = duration_cast<milliseconds>(now.time_since_epoch());
 
-  std::cout << "ns : " << ns.count() << std::endl;
   auto fractional_seconds = (ns.count() + multiple) * multiple % 4;
   // TODO give more Randomness
-  std::cout << "Random : " << fractional_seconds << std::endl;
   switch (fractional_seconds)
   {
     case 0:
@@ -42,42 +39,35 @@ void Block::swapBlock(Block* block)
   //TODO implement
 }
 
-void Block::rotateBlock(Rotation rotation)
+void Block::rotateBlock(Rotation direction)
 {
-  if (rotation == Rotation::CW)
+  if (direction == Rotation::CW)
     shape_index_.rotateCw();
-  else if (rotation == Rotation::ACW)
+  else if (direction == Rotation::ACW)
     shape_index_.rotateAcw();
 }
 
-void Block::moveBlock(const Shifting shifting)
+void Block::moveBlock(const Shifting direction)
 {
-  if (shifting == Shifting::RIGHT)
-    position_x_++;
-  else if (shifting == Shifting::LEFT)
-    position_x_--;
-  else if (shifting == Shifting::UP)
-    position_y_--;
-  else if (shifting == Shifting::DOWN)
-    position_y_++;
+  if (direction == Shifting::RIGHT)
+    position_.x_++;
+  else if (direction == Shifting::LEFT)
+    position_.x_--;
+  else if (direction == Shifting::UP)
+    position_.y_--;
+  else if (direction == Shifting::DOWN)
+    position_.y_++;
 }
 
-void Block::setPosition(int x, int y)
+void Block::setPosition(Position& position)
 {
-  position_x_ = x;
-  position_y_ = y;
+  position_ = position;
 }
 
-const int Block::getPositionX() const
+const Position& Block::getPosition() const
 {
-  return position_x_;
+  return position_;
 }
-
-const int Block::getPositionY() const
-{
-  return position_y_;
-}
-
 
 const Shape& Block::getShape() const
 {
@@ -86,7 +76,7 @@ const Shape& Block::getShape() const
   return shape;
 }
 
-const Block::ShapeType Block::getShapeType() const
+const Block::ShapeType& Block::getShapeType() const
 {
   return shape_type_;
 }
