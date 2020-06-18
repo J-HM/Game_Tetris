@@ -15,7 +15,7 @@ GameView::~GameView()
   delete board_;
 }
 
-void GameView::openGameView() const
+void GameView::openView() const
 {
   sf::Clock clock;
   bool is_paused = false;

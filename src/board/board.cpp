@@ -115,14 +115,14 @@ void Board::loopABlockCell(std::function<void(int, int)> function)
   });
 }
 
-void Board::loopABlockCell(std::function<void(int, int)> function)
+void Board::loopHBlockCell(std::function<void(int, int)> function)
 {
   loopBlockCell(*holded_block_, [&function](int i, int j){
     function(j, i);
   });
 }
 
-void Board::loopABlockCell(std::function<void(int, int)> function)
+void Board::loopWBlockCell(std::function<void(int, int)> function)
 {
   loopBlockCell(*active_block_, [&function](int i, int j){
     function(j, i);

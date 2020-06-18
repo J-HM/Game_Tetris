@@ -24,7 +24,7 @@ public:
   GameView(std::string title);
   ~GameView();
 
-  void openGameView() const;
+  void openView() const;
 
 private:
   void drawBackground() const;

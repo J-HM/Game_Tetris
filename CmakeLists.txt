@@ -1,12 +1,33 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.17)
+project(Tetris VERSION 1.0)
 
-project(Tetris)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-set
-(
+set(
   SOURCES
-  src/tetris.cpp
-  src/test123/test.cpp
+  # SRC #
+  src/main.cpp
+    # BLOCK #
+    src/block/block.cpp
+    src/block/shape_list.cpp
+      # DIRECTION #
+        # ROTATION #
+        src/block/direction/rotation/rotation.cpp
+        # SHIFTING #
+        src/block/direction/shifting/shifting.cpp
+      # POSITION #
+      src/block/position/position.cpp
+      # SHAPE_INDEX #
+      src/block/shape_index/shape_index.cpp
+    # BOARD #
+    src/board/board.cpp
+      # FRAGMENT #
+      src/board/fragment/fragment.cpp 
+    # USER #
+    src/user/user.cpp
+    # VIEW #
+    src/game_view/game_view.cpp
 )
 
 set(SFML_DIR "D:/ProgramData/sfml/lib/cmake/SFML")

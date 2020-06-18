@@ -1,9 +1,11 @@
-#include "view/game_view.h"
+#include "game_view/game_view.h"
+#include <iostream>
 
 int main()
 {
+  std::cout << "Test" << std::endl;
   GameView* game_view = new GameView("Hello Tetris!");
-  game_view->openGameView();
+  game_view->openView();
   delete game_view;
   return 0; 
 }
