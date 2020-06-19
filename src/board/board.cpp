@@ -27,6 +27,7 @@ void Board::holdABlock()
 {
   active_block_->swapBlock(holded_block_);
   std::cout << "Hold block" << std::endl;
+  
   active_block_->printInfo();
 }
 
