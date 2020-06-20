@@ -1,5 +1,11 @@
 {
   "files.associations": {
-    "ostream": "cpp"
-  }
+    "ostream": "cpp",
+    "new": "cpp",
+    "functional": "cpp"
+  },
+  "editor.rulers": [
+
+    95
+  ]
 }

@@ -1,7 +1,6 @@
 #include "game_view.h"
 
 using namespace sf;
-using std::array;
 
 GameView::GameView(std::string title)
     : window_(new RenderWindow(VideoMode(window_width_, window_height_), title, Style::Close)),
@@ -15,6 +14,7 @@ GameView::~GameView()
   delete board_;
 }
 
+
 void GameView::openView() const
 {
   sf::Clock clock;
@@ -26,7 +26,6 @@ void GameView::openView() const
   {
     tick_timer += clock.getElapsedTime().asSeconds();
     clock.restart();
-
     // event process //
     Event event;
     while (window_->pollEvent(event))
@@ -43,25 +42,25 @@ void GameView::openView() const
             is_paused = !is_paused;         // Pause / Play
             break;
           case Keyboard::Z:
-            board_->rotateABlock(Rotation::ACW); // Rotate ACW
+            board_->rotateAB(Rotation::ACW); // Rotate ACW
             break;
           case Keyboard::C:
-            board_->holdABlock();      // Hold Block
+            board_->holdAB();      // Hold Block
             break;
           case Keyboard::Space:
-            board_->dropABlockHard();  // Hard Drop
+            board_->dropABHard();  // Hard Drop
             break;
           case Keyboard::Up:
-            board_->rotateABlock(Rotation::CW);  // Rotate CW
+            board_->rotateAB(Rotation::CW);  // Rotate CW
             break;
           case Keyboard::Right:
-            board_->moveABlock(Shifting::RIGHT); // Move Right
+            board_->moveAB(Shifting::RIGHT); // Move Right
             break;
           case Keyboard::Down:
-            board_->moveABlock(Shifting::DOWN);  // Soft Drop
+            board_->moveAB(Shifting::DOWN);  // Soft Drop
             break;
           case Keyboard::Left:
-            board_->moveABlock(Shifting::LEFT);  // Move Left
+            board_->moveAB(Shifting::LEFT);  // Move Left
             break;
           default:
             std::cout << "Warning: Different Key is pressed." << std::endl;
@@ -75,7 +74,7 @@ void GameView::openView() const
     // Tick //
     if (tick_timer > game_delay)
     {
-      const bool isDropping = board_->dropABlock();
+      const bool isDropping = board_->dropAB();
 
       if (isDropping)
       {
@@ -88,69 +87,106 @@ void GameView::openView() const
       tick_timer = 0;
     }
 
-
     // Draw precess //
     window_->clear(Color(191, 191, 191));
-    drawBackground();
-    drawBench();
-    drawWaitingBlock();
 
+    drawABZone();
+    drawHBZone();
+    drawWBZone();
 
-    drawActiveBlock();
+    drawAB();
+    drawHB();
+    drawWB();
 
     window_->display();
   }
 }
 
-void GameView::drawActiveBlock() const
-{
-  RectangleShape grid = getCell(board_->getABlockShapeType());
-  const Position& block_position = board_->getABlockPosition();
 
-  board_->loopABlockCell([&] (int x, int y) {
-    int position_x = board_offset_x_ + (block_position.x_ + x) * cell_length_;
-    int position_y = board_offset_y_ + (block_position.y_ + y) * cell_length_;
+void GameView::drawAB() const
+{
+  RectangleShape grid = getCell(board_->getABShapeType());
+  const Position& block_position = board_->getABPosition();
+  board_->loopABCell([&] (int x, int y) {
+    int position_x = ab_zone_offset_x_ + (block_position.x_ + x) * cell_length_;
+    int position_y = ab_zone_offset_y_ + (block_position.y_ + y) * cell_length_;
     grid.setPosition(position_x, position_y);
     window_->draw(grid);
   });
 }
 
-void GameView::drawBench() const
+void GameView::drawHB() const
+{
+  RectangleShape grid = getCell(board_->getHBShapeType());
+  board_->loopHBCell([&] (int x, int y) {
+    int position_x = hb_zone_offset_x_ + x * cell_length_;
+    int position_y = hb_zone_offset_y_ + y * cell_length_;
+    grid.setPosition(position_x, position_y);
+    window_->draw(grid);
+  });
+}
+
+void GameView::drawWB() const
+{
+  for (int i = 0; i < Board::wb_count_; i++)
+  {
+    RectangleShape grid = getCell(board_->getWBShapeType(i));
+    board_->loopWBCell([&] (int x, int y) {
+      int position_x = wb_zone_offset_x_ + x * cell_length_;
+      int position_y = wb_zone_offset_y_ + y * cell_length_;
+      grid.setPosition(position_x, position_y);
+      window_->draw(grid);
+    });
+  }
+}
+
+
+void GameView::drawABZone() const
 {
   RectangleShape grid = getCell(Block::EMPTY);
-  for (int i = 1; i < 15; i++)
+  for (int i = 0; i < Board::ab_zone_height_; i++)
   {
-    for (int j = 0; j < 4; j++)
+    for (int j = 0; j < Board::ab_zone_width_; j++)
     {
-      int position_x = bench_offset_x_ + j * cell_length_;
-      int position_y = bench_offset_y_ + (i - 1) * cell_length_;
+      int position_x = ab_zone_offset_x_ + j * cell_length_;
+      int position_y = ab_zone_offset_y_ + i * cell_length_;
+      grid.setPosition(position_x, position_y);
+      window_->draw(grid);
+    }
+  }
+}
+
+void GameView::drawHBZone() const
+{
+  RectangleShape grid = getCell(Block::EMPTY);
+  for (int i = 0; i < Board::hb_zone_height_; i++)
+  {
+    for (int j = 0; j < Board::hb_zone_width_; j++)
+    {
+      int position_x = hb_zone_offset_x_ + j * cell_length_;
+      int position_y = hb_zone_offset_y_ + i * cell_length_;
+      grid.setPosition(position_x, position_y);
+      window_->draw(grid);
+    }
+  }
+}
+
+void GameView::drawWBZone() const
+{
+  RectangleShape grid = getCell(Block::EMPTY);
+  for (int i = 1; i < Board::wb_zone_height_; i++)
+  {
+    for (int j = 0; j < Board::wb_zone_width_; j++)
+    {
+      int position_x = wb_zone_offset_x_ + j * cell_length_;
+      int position_y = wb_zone_offset_y_ + (i - 1) * cell_length_;
       grid.setPosition(position_x, position_y);
       window_->draw(grid);
     }
     if (i % 5 == 4) i += 1;
   }
-
 }
 
-void GameView::drawWaitingBlock() const
-{
-
-}
-
-void GameView::drawBackground() const
-{
-  RectangleShape grid = getCell(Block::EMPTY);
-  for (int i = 0; i < Board::board_height_; i++)
-  {
-    for (int j = 0; j < Board::board_width_; j++)
-    {
-      int position_x = board_offset_x_ + j * cell_length_;
-      int position_y = board_offset_y_ + i * cell_length_;
-      grid.setPosition(position_x, position_y);
-      window_->draw(grid);
-    }
-  }
-}
 
 const sf::RectangleShape GameView::getCell(Block::ShapeType shape_type)
 {
