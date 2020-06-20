@@ -1,20 +1,15 @@
 #include <iostream>
-
 #include "board.h"
 
 
-const int Board::board_width_ = 10;
-const int Board::board_height_ = 20;
-
 Board::Board()
     : active_block_(new Block(Block::getRandomShape())),
-      holded_block_(new Block(Block::EMPTY)),
+      holded_block_(new Block(Block::J)),
       waiting_blocks_(),
       fragments_()
 {
-  waiting_blocks_.push(Block(Block::getRandomShape(12)));
-  waiting_blocks_.push(Block(Block::getRandomShape(23)));
-  waiting_blocks_.push(Block(Block::getRandomShape(34)));
+  for (int i = 0; i < wb_count_; i++)
+    waiting_blocks_.push_back(new Block(Block::getRandomShape()));
 }
 
 Board::~Board()
@@ -23,14 +18,16 @@ Board::~Board()
   delete holded_block_;
 }
 
-void Board::holdABlock()
+
+void Board::holdAB()
 {
   active_block_->swapBlock(holded_block_);
   std::cout << "Hold block" << std::endl;
+  
   active_block_->printInfo();
 }
 
-const bool Board::moveABlock(Shifting::Value direction) const
+const bool Board::moveAB(Shifting::Value direction) const
 {
   std::cout << "Move block: " << std::endl;
   if (direction == Shifting::LEFT)
@@ -55,7 +52,7 @@ const bool Board::moveABlock(Shifting::Value direction) const
   return true;
 }
 
-const bool Board::rotateABlock(Rotation::Value direction) const
+const bool Board::rotateAB(Rotation::Value direction) const
 {
   // TODO wall kick
   std::cout << "Rotate block Left: " << std::endl;
@@ -76,8 +73,7 @@ const bool Board::rotateABlock(Rotation::Value direction) const
   active_block_->printInfo();
 }
 
-
-const bool Board::dropABlock()
+const bool Board::dropAB()
 {
   if (getWallABlockOn() != Wall::BOTTOM)
   {
@@ -90,53 +86,65 @@ const bool Board::dropABlock()
   }
 }
 
-const bool Board::dropABlockHard()
+const bool Board::dropABHard()
 {
   return true;
   //TODO implement dropHard
 }
 
-const Position& Board::getABlockPosition() const
+
+const Position& Board::getABPosition() const
 {
   return active_block_->getPosition();
 }
 
 
-const Block::ShapeType Board::getABlockShapeType() const
+const Block::ShapeType Board::getABShapeType() const
 {
   return active_block_->getShapeType();
 }
 
+const Block::ShapeType Board::getHBShapeType() const
+{
+  return holded_block_->getShapeType();
+}
 
-void Board::loopABlockCell(std::function<void(int, int)> function)
+const Block::ShapeType Board::getWBShapeType(int index) const
+{
+  return waiting_blocks_.at(index)->getShapeType();
+}
+
+
+void Board::loopABCell(std::function<void(int, int)> function)
 {
   loopBlockCell(*active_block_, [&function](int i, int j){
     function(j, i);
   });
 }
 
-void Board::loopHBlockCell(std::function<void(int, int)> function)
+void Board::loopHBCell(std::function<void(int, int)> function)
 {
   loopBlockCell(*holded_block_, [&function](int i, int j){
     function(j, i);
   });
 }
 
-void Board::loopWBlockCell(std::function<void(int, int)> function)
+void Board::loopWBCell(std::function<void(int, int)> function)
 {
-  loopBlockCell(*active_block_, [&function](int i, int j){
+  loopBlockCell(*(waiting_blocks_.at(1)), [&function](int i, int j){
     function(j, i);
   });
 }
+
 
 // private //
 const Board::Wall Board::getWallABlockOn() const
 {
   auto wall_ablock_on = BETWEEN;
   loopBlockCell(*active_block_, [this, &wall_ablock_on](int i, int j){
-    if (active_block_->getPosition().y_ + i == board_height_ - 1)
+    if (active_block_->getPosition().y_ + i == ab_zone_height_ - 1)
       wall_ablock_on = BOTTOM;
-    if (active_block_->getPosition().x_ + j == board_width_ - 1)
+    if (active_block_->getPosition().x_ + j == ab_zone_width_ - 1)
       wall_ablock_on = RIGHT;
     if (active_block_->getPosition().x_ + j == 0)
       wall_ablock_on = LEFT;

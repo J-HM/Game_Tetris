@@ -12,13 +12,15 @@ class GameView
 public:
   static const sf::RectangleShape getCell(Block::ShapeType shape);
 
-  static const int cell_length_ = 30;
-  static const int window_width_ = 650;
-  static const int window_height_ = 700;
-  static const int board_offset_x_ = 100;
-  static const int board_offset_y_ = 50;
-  static const int bench_offset_x_ = 450;
-  static const int bench_offset_y_ = 50;
+  static const int cell_length_ = 25;
+  static const int window_width_ = 600;
+  static const int window_height_ = 600;
+  static const int ab_zone_offset_x_ = 175;
+  static const int ab_zone_offset_y_ = 50;
+  static const int hb_zone_offset_x_ = 50;
+  static const int hb_zone_offset_y_ = 50;
+  static const int wb_zone_offset_x_ = 450;
+  static const int wb_zone_offset_y_ = 50;
 
 public:
   GameView(std::string title);
@@ -27,10 +29,13 @@ public:
   void openView() const;
 
 private:
-  void drawBackground() const;
-  void drawBench() const;
-  void drawWaitingBlock() const;
-  void drawActiveBlock() const;
+  void drawABZone() const; // draw active block background 
+  void drawHBZone() const; // draw holding block background
+  void drawWBZone() const; // draw waiting blocks background
+
+  void drawAB() const;
+  void drawHB() const;
+  void drawWB() const;
 
   sf::RenderWindow* window_;
   Board* board_;

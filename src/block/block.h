@@ -31,20 +31,16 @@ public:
 
   Block(const ShapeType& shape);
 
-  // operate block //
   void swapBlock(Block* block);
   void rotateBlock(Rotation direction);
   void moveBlock(Shifting direction);
 
-  // getter //
   const Shape& getShape() const;
   const ShapeType& getShapeType() const;
   const Position& getPosition() const;
 
-  // setter //
   void setPosition(Position& position);
 
-  // test code //
   void printInfo() const
   {
     switch (shape_type_)
