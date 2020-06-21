@@ -74,26 +74,15 @@ void GameView::openView() const
     // Tick //
     if (tick_timer > game_delay)
     {
-      const bool isDropping = board_->dropAB();
-
-      if (isDropping)
-      {
-        std::cout << "block is floating in the air" << std::endl;
-      }
-      else // ABlock is on fragments or bottom wall
-      {
-        std::cout << "block is on fragments or bottom wall" << std::endl;
-      }
+      board_->moveAB(Shifting::DOWN);
       tick_timer = 0;
     }
 
     // Draw precess //
     window_->clear(Color(191, 191, 191));
-
     drawABZone();
     drawHBZone();
     drawWBZone();
-
     drawAB();
     drawHB();
     drawWB();
@@ -131,9 +120,9 @@ void GameView::drawWB() const
   for (int i = 0; i < Board::wb_count_; i++)
   {
     RectangleShape grid = getCell(board_->getWBShapeType(i));
-    board_->loopWBCell([&] (int x, int y) {
-      int position_x = wb_zone_offset_x_ + x * cell_length_;
-      int position_y = wb_zone_offset_y_ + y * cell_length_;
+    board_->loopWBCell(i, [&] (int x, int y) {
+      int position_x = wb_zone_offset_x_ + cell_length_ * x;
+      int position_y = wb_zone_offset_y_ + cell_length_ * (y + i * 5);
       grid.setPosition(position_x, position_y);
       window_->draw(grid);
     });

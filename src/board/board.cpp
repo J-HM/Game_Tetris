@@ -1,4 +1,5 @@
 #include <iostream>
+
 #include "board.h"
 
 
@@ -9,7 +10,7 @@ Board::Board()
       fragments_()
 {
   for (int i = 0; i < wb_count_; i++)
-    waiting_blocks_.push_back(new Block(Block::getRandomShape()));
+    waiting_blocks_.push_back(new Block(Block::getRandomShape(i)));
 }
 
 Board::~Board()
@@ -27,68 +28,41 @@ void Board::holdAB()
   active_block_->printInfo();
 }
 
-const bool Board::moveAB(Shifting::Value direction) const
+void Board::moveAB(Shifting::Value direction) const
 {
   std::cout << "Move block: " << std::endl;
   if (direction == Shifting::LEFT)
   {
-    if (getWallABlockOn() != Wall::LEFT)
-      active_block_->moveBlock(Shifting::LEFT);
-    else
-      return false;
+    if (!isABOnLeftWall()) active_block_->moveBlock(Shifting::LEFT);
   }
-  else if (direction == Shifting::RIGHT)
+  if (direction == Shifting::RIGHT)
   {
-    if (getWallABlockOn() != Wall::RIGHT)
-      active_block_->moveBlock(Shifting::RIGHT);
-    else
-      return false;
+    if (!isABOnRightWall()) active_block_->moveBlock(Shifting::RIGHT);
   }
-  else
+  if (direction == Shifting::DOWN)
   {
-    return false;
+    if (!isABOnBottomWall()) active_block_->moveBlock(Shifting::DOWN);
   }
   active_block_->printInfo();
-  return true;
 }
 
-const bool Board::rotateAB(Rotation::Value direction) const
+void Board::rotateAB(Rotation::Value direction) const
 {
   // TODO wall kick
   std::cout << "Rotate block Left: " << std::endl;
   if (direction == Rotation::CW)
   {
     active_block_->rotateBlock(Rotation::CW);
-    return true;
   }
-  else if (direction == Rotation::ACW)
+  if (direction == Rotation::ACW)
   {
     active_block_->rotateBlock(Rotation::ACW);
-    return true;
-  }
-  else
-  {
-    return false;
   }
   active_block_->printInfo();
 }
 
-const bool Board::dropAB()
+void Board::dropABHard()
 {
-  if (getWallABlockOn() != Wall::BOTTOM)
-  {
-    active_block_->moveBlock(Shifting::DOWN);
-    return true;
-  }
-  else
-  {
-    return false;
-  }
-}
-
-const bool Board::dropABHard()
-{
-  return true;
   //TODO implement dropHard
 }
 
@@ -129,31 +103,47 @@ void Board::loopHBCell(std::function<void(int, int)> function)
   });
 }
 
-void Board::loopWBCell(std::function<void(int, int)> function)
+void Board::loopWBCell(int index, std::function<void(int, int)> function)
 {
-  loopBlockCell(*(waiting_blocks_.at(1)), [&function](int i, int j){
+  loopBlockCell(*(waiting_blocks_.at(index)), [&function](int i, int j){
     function(j, i);
   });
 }
 
 
 // private //
-const Board::Wall Board::getWallABlockOn() const
+const bool Board::isABOnLeftWall() const
 {
-  auto wall_ablock_on = BETWEEN;
-  loopBlockCell(*active_block_, [this, &wall_ablock_on](int i, int j){
-    if (active_block_->getPosition().y_ + i == ab_zone_height_ - 1)
-      wall_ablock_on = BOTTOM;
-    if (active_block_->getPosition().x_ + j == ab_zone_width_ - 1)
-      wall_ablock_on = RIGHT;
-    if (active_block_->getPosition().x_ + j == 0)
-      wall_ablock_on = LEFT;
+  bool is_ab_on_left_wall = false;
+  loopBlockCell(*active_block_, [this, &is_ab_on_left_wall](int i, int j){
+    if (active_block_->getPosition().x_ + j <= 0)
+      is_ab_on_left_wall = true;
   });
-  return wall_ablock_on;
+  return is_ab_on_left_wall;
+}
+
+const bool Board::isABOnRightWall() const
+{
+  bool is_ab_on_right_wall = false;
+  loopBlockCell(*active_block_, [this, &is_ab_on_right_wall](int i, int j){
+    if (active_block_->getPosition().x_ + j >= ab_zone_width_ - 1)
+      is_ab_on_right_wall = true;
+  });
+  return is_ab_on_right_wall;
+}
+
+const bool Board::isABOnBottomWall() const
+{
+  bool is_ab_on_bottom_wall = false;
+  loopBlockCell(*active_block_, [this, &is_ab_on_bottom_wall](int i, int j){
+    if (active_block_->getPosition().y_ + i >= ab_zone_height_ - 1)
+      is_ab_on_bottom_wall = true;
+  });
+  return is_ab_on_bottom_wall;
 }
 
 
-const bool Board::checkABlockOnFragments() const
+const bool Board::isABOnFragments() const
 {
   const auto& shape = active_block_->getShape();
 
@@ -161,17 +151,11 @@ const bool Board::checkABlockOnFragments() const
 }
 
 
-void Board::loopBlockCell(Block& block, std::function<void(short int, short int)> function) const
+void Board::loopBlockCell(Block& block, std::function<void(int, int)> function) const
 {
-  const auto& shape = active_block_->getShape();
+  const auto& shape = block.getShape();
   for (unsigned int i = 0; i < shape.size(); i++)
-  {
     for (unsigned int j = 0; j < shape.at(i).size(); j++)
-    {
       if (shape.at(i).at(j))
-      {
         function(i, j);
-      }
-    }
-  }
 }

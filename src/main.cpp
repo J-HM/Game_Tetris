@@ -1,5 +1,5 @@
 #include "game_view/game_view.h"
-#include <iostream>
+
 
 int main()
 {

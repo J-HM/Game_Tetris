@@ -14,7 +14,7 @@
 
 
 using Shape = std::vector<std::vector<bool>>;
-using ShapeList = std::vector<Shape>;
+using ShapeList = std::vector<std::vector<std::vector<bool>>>;
 
 class Block
 {
@@ -23,12 +23,15 @@ public:
 
   const static ShapeType getRandomShape(int multiple = 1);
   const static std::map<ShapeType, const ShapeList&> shpae_list_map_;
+
+private:
   const static ShapeList empty_shape_list_;
   const static ShapeList i_shape_list_;
   const static ShapeList j_shape_list_;
   const static ShapeList l_shape_list_;
   const static ShapeList o_shape_list_;
 
+public:
   Block(const ShapeType& shape);
 
   void swapBlock(Block* block);
@@ -74,7 +77,6 @@ private:
   const ShapeType shape_type_;
   bool is_focusing_;
 };
-
 
 
 #endif
