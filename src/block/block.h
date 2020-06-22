@@ -7,9 +7,9 @@
 #include <vector>
 #include <map>
 
-#include "position/position.h"
-#include "direction/rotation/rotation.h"
-#include "direction/shifting/shifting.h"
+#include "../position/position.h"
+#include "../direction/rotation/rotation.h"
+#include "../direction/shifting/shifting.h"
 #include "shape_index/shape_index.h"
 
 

@@ -9,26 +9,27 @@
         "-g",
         // "-O2",
         "src/main.cpp",
-        /* BLOCK */
-        "src/block/block.cpp",
-        "src/block/shape_list.cpp",
-        /*# DIRECTION */
-        /* ROTATION */
-        "src/block/direction/rotation/rotation.cpp",
-        /* SHIFTING */
-        "src/block/direction/shifting/shifting.cpp",
-        /* POSITION */
-        "src/block/position/position.cpp",
-        /* SHAPE_INDEX */
-        "src/block/shape_index/shape_index.cpp",
-        /* BOARD */
-        "src/board/board.cpp",
-        /* FRAGMENT */
-        "src/board/fragment/fragment.cpp",
-        /* USER */
-        "src/user/user.cpp",
-        /* VIEW */
-        "src/game_view/game_view.cpp",
+          /* BLOCK */
+          "src/block/block.cpp",
+          "src/block/shape_list.cpp",
+            /* SHAPE_INDEX */
+            "src/block/shape_index/shape_index.cpp",
+          /* BOARD */
+          "src/board/board.cpp",
+            /* FRAGMENT */
+            "src/board/fragment/fragment.cpp",
+
+          /* DIRECTION */
+            /* ROTATION */
+            "src/direction/rotation/rotation.cpp",
+            /* SHIFTING */
+            "src/direction/shifting/shifting.cpp",
+
+          /* GAME_VIEW */
+          "src/game_view/game_view.cpp",
+
+          /* POSITION */
+          "src/position/position.cpp",
         
         "-o",
         "${workspaceFolder}\\build\\Tetris.exe",
