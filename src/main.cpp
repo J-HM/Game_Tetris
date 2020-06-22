@@ -8,7 +8,6 @@ int main()
   delete game_view;
   return 0;
 }
-
 // TODO 1. Reinforce randomness of the waiting block.
 // TODO 4. Implement dropped active blocks changes fragments
 // TODO 5. Implement active blocks wall kick when rotating

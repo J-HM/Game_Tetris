@@ -22,7 +22,7 @@ void GameView::openView() const
   bool is_paused = false;
   sf::Clock tick_clock;
   double tick_delay = 1.0 / 1.0;
-  double lock_delay = 1.0;
+  double lock_delay = 0.8;
   double tick_timer = 0;
   while (window_->isOpen())
   {
