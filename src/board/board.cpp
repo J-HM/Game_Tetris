@@ -5,9 +5,11 @@
 
 Board::Board()
     : active_block_(new Block(Block::getRandomShape())),
-      holded_block_(new Block(Block::J)),
+      holded_block_(new Block(Block::EMPTY)),
       waiting_blocks_(),
-      fragments_()
+      fragments_(),
+      is_ab_falling_(true),
+      is_swapped_(false)
 {
   for (int i = 0; i < wb_count_; i++)
     waiting_blocks_.push_back(new Block(Block::getRandomShape(i)));
@@ -22,26 +24,38 @@ Board::~Board()
 
 void Board::holdAB()
 {
-  active_block_->swapBlock(holded_block_);
-  std::cout << "Hold block" << std::endl;
-  
+  std::cout << "Hold block:" << std::endl;
+  active_block_->setPosition(3, 0);
+  std::swap(active_block_, holded_block_);
+  if (active_block_->getShapeType() == Block::EMPTY)
+  {
+    delete active_block_;
+    active_block_ = *(waiting_blocks_.begin());
+    waiting_blocks_.pop_front();
+    waiting_blocks_.push_back(new Block(Block::getRandomShape()));
+  }
   active_block_->printInfo();
 }
 
-void Board::moveAB(Shifting::Value direction) const
+void Board::moveAB(Shifting::Value direction)
 {
   std::cout << "Move block: " << std::endl;
   if (direction == Shifting::LEFT)
   {
     if (!isABOnLeftWall()) active_block_->moveBlock(Shifting::LEFT);
   }
-  if (direction == Shifting::RIGHT)
+  else if (direction == Shifting::RIGHT)
   {
     if (!isABOnRightWall()) active_block_->moveBlock(Shifting::RIGHT);
   }
-  if (direction == Shifting::DOWN)
+  else if (direction == Shifting::DOWN)
   {
     if (!isABOnBottomWall()) active_block_->moveBlock(Shifting::DOWN);
+    else is_ab_falling_ = false;
+  }
+  else
+  {
+    std::cout << "Warning: Wrong direction." << std::endl;
   }
   active_block_->printInfo();
 }
@@ -110,6 +124,25 @@ void Board::loopWBCell(int index, std::function<void(int, int)> function)
   });
 }
 
+
+void Board::popBackWBSToAB()
+{
+  is_ab_falling_ = true;
+  delete active_block_;
+  active_block_ = *(waiting_blocks_.begin());
+  waiting_blocks_.pop_front();
+  waiting_blocks_.push_back(new Block(Block::getRandomShape()));
+}
+
+const bool Board::getIsABFalling() const
+{
+  return is_ab_falling_;
+}
+
+const bool Board::getIsSwapped() const
+{
+  return is_swapped_;
+}
 
 // private //
 const bool Board::isABOnLeftWall() const

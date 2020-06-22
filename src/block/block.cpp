@@ -1,13 +1,15 @@
 
 #include "block.h"
 
+
 Block::Block(const ShapeType& shape)
     : shape_index_(0),
-      position_(Position(0, 0)),
+      position_(Position(3, 0)),
       shape_type_(shape),
       is_focusing_(false)
 {
 }
+
 
 const Block::ShapeType Block::getRandomShape(int multiple)
 {
@@ -34,10 +36,6 @@ const Block::ShapeType Block::getRandomShape(int multiple)
 //  return Block::I;
 }
 
-void Block::swapBlock(Block* block)
-{
-  //TODO implement
-}
 
 void Block::rotateBlock(Rotation direction)
 {
@@ -59,10 +57,18 @@ void Block::moveBlock(const Shifting direction)
     position_.y_++;
 }
 
+
 void Block::setPosition(Position& position)
 {
   position_ = position;
 }
+
+void Block::setPosition(short int x, short int y)
+{
+  position_.x_ = x;
+  position_.y_ = y;
+}
+
 
 const Position& Block::getPosition() const
 {

@@ -17,15 +17,17 @@ GameView::~GameView()
 
 void GameView::openView() const
 {
-  sf::Clock clock;
+  bool is_z_pressed = false;  // Protect z continuous input
+  bool is_up_pressed = false; // Protect up continuous input
   bool is_paused = false;
-  float game_delay = 0.5;
-  float tick_timer = 0;
-
+  sf::Clock tick_clock;
+  double tick_delay = 1.0 / 1.0;
+  double lock_delay = 1.0;
+  double tick_timer = 0;
   while (window_->isOpen())
   {
-    tick_timer += clock.getElapsedTime().asSeconds();
-    clock.restart();
+    tick_timer += tick_clock.getElapsedTime().asSeconds();
+    tick_clock.restart();
     // event process //
     Event event;
     while (window_->pollEvent(event))
@@ -34,37 +36,39 @@ void GameView::openView() const
       {
         window_->close();
       }
-      if (event.type == Event::KeyPressed)
+      else if (event.type == Event::KeyPressed)
       {
-        switch (event.key.code)
+        if (event.key.code == Keyboard::Escape)
+          is_paused = !is_paused;          // Pause / Play
+        else if (event.key.code == Keyboard::Z && !is_z_pressed)
         {
-          case Keyboard::Escape:
-            is_paused = !is_paused;         // Pause / Play
-            break;
-          case Keyboard::Z:
-            board_->rotateAB(Rotation::ACW); // Rotate ACW
-            break;
-          case Keyboard::C:
-            board_->holdAB();      // Hold Block
-            break;
-          case Keyboard::Space:
-            board_->dropABHard();  // Hard Drop
-            break;
-          case Keyboard::Up:
-            board_->rotateAB(Rotation::CW);  // Rotate CW
-            break;
-          case Keyboard::Right:
-            board_->moveAB(Shifting::RIGHT); // Move Right
-            break;
-          case Keyboard::Down:
-            board_->moveAB(Shifting::DOWN);  // Soft Drop
-            break;
-          case Keyboard::Left:
-            board_->moveAB(Shifting::LEFT);  // Move Left
-            break;
-          default:
-            std::cout << "Warning: Different Key is pressed." << std::endl;
+          is_z_pressed = true;
+          board_->rotateAB(Rotation::ACW); // Rotate ACW
+        }  
+        else if (event.key.code == Keyboard::C)
+          board_->holdAB();                // Hold Block
+        else if (event.key.code == Keyboard::Space)
+          board_->dropABHard();            // Hard Drop
+        else if (event.key.code == Keyboard::Up && !is_up_pressed)
+        {
+          is_up_pressed = true;
+          board_->rotateAB(Rotation::CW);  // Rotate CW
         }
+        else if (event.key.code == Keyboard::Right)
+          board_->moveAB(Shifting::RIGHT); // Move Right
+        else if (event.key.code == Keyboard::Down)
+          board_->moveAB(Shifting::DOWN);  // Soft Drop
+        else if (event.key.code == Keyboard::Left)
+          board_->moveAB(Shifting::LEFT);  // Move Left
+        else
+          std::cout << "Warning: Different Key is pressed." << std::endl;
+      }
+      else if (event.type == Event::KeyReleased)
+      {
+        if (event.key.code == Keyboard::Z)
+          is_z_pressed = false;
+        if (event.key.code == Keyboard::Up)
+          is_up_pressed = false;
       }
     }
 
@@ -72,9 +76,16 @@ void GameView::openView() const
     if (is_paused) continue;
 
     // Tick //
-    if (tick_timer > game_delay)
+    if (tick_timer > tick_delay && board_->getIsABFalling())
     {
       board_->moveAB(Shifting::DOWN);
+      tick_timer = 0;
+    }
+
+    if (tick_timer > lock_delay && !board_->getIsABFalling())
+    {
+      std::cout << "Time to stop!" << std::endl;
+      board_->popBackWBSToAB();
       tick_timer = 0;
     }
 
@@ -86,7 +97,6 @@ void GameView::openView() const
     drawAB();
     drawHB();
     drawWB();
-
     window_->display();
   }
 }

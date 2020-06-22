@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <queue>
+#include <algorithm>
 #include <functional>
 
 #include "../block/block.h"
@@ -22,10 +23,9 @@ public:
 
   Board();
   ~Board();
-
+  
   void holdAB();
-
-  void moveAB(Shifting::Value direction) const;
+  void moveAB(Shifting::Value direction);
   void rotateAB(Rotation::Value direction) const;
   void dropABHard();
 
@@ -38,11 +38,19 @@ public:
   void loopHBCell(std::function<void(int, int)> function);
   void loopWBCell(int index, std::function<void(int, int)> function);
 
+  void popBackWBSToAB();
+
+  const bool getIsABFalling() const;
+  const bool getIsSwapped() const;
+
 private:
   Block* active_block_; // AB
   Block* holded_block_; // HB
-  std::vector<Block*> waiting_blocks_; // WB
+  std::deque<Block*> waiting_blocks_; // WBS
   std::vector<Fragment> fragments_;
+
+  bool is_ab_falling_;
+  bool is_swapped_;
 
   const bool isABOnLeftWall() const;
   const bool isABOnRightWall() const;

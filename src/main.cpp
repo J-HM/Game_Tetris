@@ -10,7 +10,6 @@ int main()
 }
 
 // TODO 1. Reinforce randomness of the waiting block.
-// TODO 3. Implement waiting blocks can FIFO
 // TODO 4. Implement dropped active blocks changes fragments
 // TODO 5. Implement active blocks wall kick when rotating
 // TODO 6. Implement line clear checking when active blocks changes fragments

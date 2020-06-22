@@ -34,7 +34,6 @@ private:
 public:
   Block(const ShapeType& shape);
 
-  void swapBlock(Block* block);
   void rotateBlock(Rotation direction);
   void moveBlock(Shifting direction);
 
@@ -43,6 +42,8 @@ public:
   const Position& getPosition() const;
 
   void setPosition(Position& position);
+  void setPosition(short int x, short int y);
+
 
   void printInfo() const
   {
