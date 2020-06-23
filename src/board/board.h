@@ -24,7 +24,7 @@ public:
   Board();
   ~Board();
   
-  void holdAB();
+  void swapABwithHB();
   void moveAB(Shifting::Value direction);
   void rotateAB(Rotation::Value direction) const;
   void dropABHard();
@@ -32,22 +32,27 @@ public:
   const Position& getABPosition() const;
   const Block::ShapeType getABShapeType() const;
   const Block::ShapeType getHBShapeType() const;
-  const Block::ShapeType getWBShapeType(int index) const;
+  const Block::ShapeType getWBhapeType(int index) const;
 
-  void loopABCell(std::function<void(int, int)> function);
-  void loopHBCell(std::function<void(int, int)> function);
-  void loopWBCell(int index, std::function<void(int, int)> function);
+  void loopABCells(std::function<bool(int, int)> function) const;
+  void loopHBCells(std::function<bool(int, int)> function) const;
+  void loopWBCells(int index, std::function<bool(int, int)> function) const;
+  void loopFragments(std::function<bool(Block::ShapeType, int, int)> function) const;
 
-  void popBackWBSToAB();
+  void popWBToAB();
 
   const bool getIsABFalling() const;
   const bool getIsSwapped() const;
 
+  void putABtoFragments();
+  const bool checkFragmentLine() const;
+  void deleteFragmentLine(short int y);
+
 private:
-  Block* active_block_; // AB
-  Block* holded_block_; // HB
-  std::deque<Block*> waiting_blocks_; // WBS
-  std::vector<Fragment> fragments_;
+  Block* active_block_;               // AB
+  Block* holded_block_;               // HB
+  std::deque<Block*> waiting_blocks_; // WB
+  std::vector<Fragment*> fragments_;
 
   bool is_ab_falling_;
   bool is_swapped_;
@@ -58,7 +63,7 @@ private:
 
   const bool isABOnFragments() const;
 
-  void loopBlockCell(Block& block, std::function<void(int, int)> function) const;
+  const bool loopBlockCell(Block& block, std::function<bool(int, int)> function) const;
 };
 
 #endif

@@ -37,6 +37,8 @@ private:
   void drawHB() const;
   void drawWB() const;
 
+  void drawFragment() const;
+
   sf::RenderWindow* window_;
   Board* board_;
 };
