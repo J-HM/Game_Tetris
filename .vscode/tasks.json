@@ -16,18 +16,17 @@
             "src/block/shape_index/shape_index.cpp",
           /* BOARD */
           "src/board/board.cpp",
-            /* FRAGMENT */
-            "src/board/fragment/fragment.cpp",
-
+            /* FRAGMENTS */
+            "src/board/fragments/fragments.cpp",
+              /* FRAGMENT */
+              "src/board/fragments/fragment/fragment.cpp",
           /* DIRECTION */
             /* ROTATION */
             "src/direction/rotation/rotation.cpp",
             /* SHIFTING */
             "src/direction/shifting/shifting.cpp",
-
           /* GAME_VIEW */
           "src/game_view/game_view.cpp",
-
           /* POSITION */
           "src/position/position.cpp",
         

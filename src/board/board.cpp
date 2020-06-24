@@ -131,7 +131,7 @@ void Board::loopWBCells(int index, std::function<bool(int, int)> function) const
 
 void Board::loopFragments(std::function<bool(Block::ShapeType, int, int)> function) const
 { 
-  for (auto fragment : fragments_)
+  for (auto fragment : fragments_.getVector())
   {
     const auto& position = fragment->getPosition();
     function(fragment->getShapeType(), position.x_, position.y_);

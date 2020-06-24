@@ -7,7 +7,7 @@
 #include <functional>
 
 #include "../block/block.hpp"
-#include "fragment/fragment.hpp"
+#include "fragments/fragments.hpp"
 
 
 class Board
@@ -52,7 +52,7 @@ private:
   Block* active_block_;               // AB
   Block* holded_block_;               // HB
   std::deque<Block*> waiting_blocks_; // WB
-  std::vector<Fragment*> fragments_;  // Frags
+  Fragments fragments_;  // Frags
 
   bool is_ab_falling_;
   bool is_swapped_;
