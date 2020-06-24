@@ -1,4 +1,4 @@
-#include "game_view/game_view.h"
+#include "game_view/game_view.hpp"
 
 
 int main()

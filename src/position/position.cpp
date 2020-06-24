@@ -1,7 +1,7 @@
-#include "position.h"
+#include "position.hpp"
 
 
-Position::Position(short int x, short int y)
+Position::Position(int x, int y)
     : x_(x),
       y_(y)
 {

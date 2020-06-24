@@ -1,4 +1,4 @@
-#include "fragment.h"
+#include "fragment.hpp"
 
 Fragment::Fragment(Position position, Block::ShapeType shape_type)
     : position_(position),

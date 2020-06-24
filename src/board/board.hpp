@@ -1,13 +1,13 @@
-#ifndef BOARD_H
-#define BOARD_H
+#ifndef BOARD_HPP
+#define BOARD_HPP
 
 #include <vector>
 #include <queue>
 #include <algorithm>
 #include <functional>
 
-#include "../block/block.h"
-#include "fragment/fragment.h"
+#include "../block/block.hpp"
+#include "fragment/fragment.hpp"
 
 
 class Board
@@ -44,15 +44,15 @@ public:
   const bool getIsABFalling() const;
   const bool getIsSwapped() const;
 
-  void putABtoFragments();
-  const bool checkFragmentLine() const;
-  void deleteFragmentLine(short int y);
+  void putABtoFrags();
+  const bool checkFragsLine() const;
+  void deleteFragsLine(int y);
 
 private:
   Block* active_block_;               // AB
   Block* holded_block_;               // HB
   std::deque<Block*> waiting_blocks_; // WB
-  std::vector<Fragment*> fragments_;
+  std::vector<Fragment*> fragments_;  // Frags
 
   bool is_ab_falling_;
   bool is_swapped_;
@@ -61,7 +61,9 @@ private:
   const bool isABOnRightWall() const;
   const bool isABOnBottomWall() const;
 
-  const bool isABOnFragments() const;
+  const bool isABOnFrags() const;
+
+  const bool searchPositionInFrags(int x, int y);
 
   const bool loopBlockCell(Block& block, std::function<bool(int, int)> function) const;
 };

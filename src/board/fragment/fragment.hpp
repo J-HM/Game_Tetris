@@ -1,8 +1,8 @@
-#ifndef FRAGMENT_H
-#define FRAGMENT_H
+#ifndef FRAGMENT_HPP
+#define FRAGMENT_HPP
 
-#include "../../position/position.h"
-#include "../../block/block.h"
+#include "../../position/position.hpp"
+#include "../../block/block.hpp"
 
 
 class Fragment

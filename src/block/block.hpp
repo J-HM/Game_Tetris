@@ -1,5 +1,5 @@
-#ifndef BLOCK_H
-#define BLOCK_H
+#ifndef BLOCK_HPP
+#define BLOCK_HPP
 
 #include <iostream> // for test code
 #include <random>
@@ -7,10 +7,10 @@
 #include <vector>
 #include <map>
 
-#include "../position/position.h"
-#include "../direction/rotation/rotation.h"
-#include "../direction/shifting/shifting.h"
-#include "shape_index/shape_index.h"
+#include "../position/position.hpp"
+#include "../direction/rotation/rotation.hpp"
+#include "../direction/shifting/shifting.hpp"
+#include "shape_index/shape_index.hpp"
 
 
 using Shape = std::vector<std::vector<bool>>;
@@ -25,7 +25,7 @@ public:
   const static std::map<ShapeType, const ShapeList&> shpae_list_map_;
 
 private:
-  const static short int shape_type_count_ = 7;
+  const static int shape_type_count_ = 7;
   const static ShapeList empty_shape_list_; // Declared in shape_list.cpp
   const static ShapeList i_shape_list_;
   const static ShapeList j_shape_list_;
@@ -48,7 +48,7 @@ public:
   const int getContainerHeight() const;
 
   void setPosition(Position&& position);
-  void setPosition(short int x, short int y);
+  void setPosition(int x, int y);
 
   void printStatus() const;
 

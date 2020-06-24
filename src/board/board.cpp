@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "board.h"
+#include "board.hpp"
 
 
 Board::Board()
@@ -161,7 +161,7 @@ const bool Board::getIsSwapped() const
 }
 
 
-void Board::putABtoFragments()
+void Board::putABtoFrags()
 {
   const auto& shape_type = active_block_->getShapeType();
   const auto& position = active_block_->getPosition();
@@ -174,19 +174,18 @@ void Board::putABtoFragments()
   });
 }
 
-const bool Board::checkFragmentLine() const
+const bool Board::checkFragsLine() const
 {
   // TODO
   return false;
 }
 
-void Board::deleteFragmentLine(short int y)
+void Board::deleteFragsLine(int y)
 {
   // TODO
 }
 
 
-// private
 const bool Board::isABOnLeftWall() const
 {
   if (active_block_->getPosition().x_ > 0) 
@@ -227,11 +226,16 @@ const bool Board::isABOnBottomWall() const
 }
 
 
-const bool Board::isABOnFragments() const
+const bool Board::isABOnFrags() const
 {
-  const auto& shape = active_block_->getShape();
-
-  return false;
+  return loopBlockCell(*active_block_, [&active_block_ = active_block_](int x, int y)
+  {
+    // Position active_block_positiom(active_block_->getPosition().x_, active_block_->getPosition().y_);
+    if (active_block_->getPosition().y_ + y >= ab_zone_height_ - 1)
+      return true;
+    else
+      return false;
+  });
 }
 
 

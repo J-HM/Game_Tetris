@@ -1,10 +1,10 @@
-#ifndef GAME_VIEW_H
-#define GAME_VIEW_H
+#ifndef GAME_VIEW_HPP
+#define GAME_VIEW_HPP
 
 #include <array>
 #include <SFML/Graphics.hpp>
 
-#include "../board/board.h"
+#include "../board/board.hpp"
 
 
 class GameView

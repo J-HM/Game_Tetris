@@ -1,4 +1,4 @@
-#include "game_view.h"
+#include "game_view.hpp"
 
 using namespace sf;
 
@@ -85,7 +85,7 @@ void GameView::openView() const
     if (tick_timer > lock_delay && !board_->getIsABFalling())
     {
       std::cout << "Time to stop!" << std::endl;
-      board_->putABtoFragments();
+      board_->putABtoFrags();
       board_->popWBToAB();
       tick_timer = 0;
     }

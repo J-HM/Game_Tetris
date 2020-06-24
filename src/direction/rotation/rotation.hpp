@@ -1,12 +1,12 @@
-#ifndef SHIFTING_H
-#define SHIFTING_H
+#ifndef ROTAION_HPP
+#define ROTAION_HPP
 
-class Shifting
+class Rotation
 {
 public:
-  enum Value : char {UP, RIGHT, DOWN, LEFT};
+  enum Value: char {CW, ACW};
 
-  Shifting(const Value& value);
+  Rotation(const Value& value);
   const bool operator==(const Value& value) const;
   const bool operator!=(const Value& value) const;
 

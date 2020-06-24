@@ -1,5 +1,5 @@
 
-#include "block.h"
+#include "block.hpp"
 
 
 Block::Block(const ShapeType& shape)
@@ -87,7 +87,7 @@ void Block::setPosition(Position&& position)
   position_ = position;
 }
 
-void Block::setPosition(short int x, short int y)
+void Block::setPosition(int x, int y)
 {
   position_.x_ = x;
   position_.y_ = y;

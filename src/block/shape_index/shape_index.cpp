@@ -1,7 +1,7 @@
-#include "shape_index.h"
+#include "shape_index.hpp"
 
 
-ShapeIndex::ShapeIndex(short int shape_index)
+ShapeIndex::ShapeIndex(int shape_index)
     : shape_index_(shape_index)
 {
 }
@@ -18,7 +18,7 @@ void ShapeIndex::rotateAcw()
   if (shape_index_ < 0) shape_index_ = 3;
 }
 
-const short int& ShapeIndex::getIndex() const
+const int& ShapeIndex::getIndex() const
 {
   return shape_index_;
 }
