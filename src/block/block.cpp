@@ -1,4 +1,3 @@
-
 #include "block.hpp"
 
 
@@ -91,6 +90,24 @@ void Block::setPosition(int x, int y)
 {
   position_.x_ = x;
   position_.y_ = y;
+}
+
+
+const bool Block::loopCell(std::function<bool(int, int)>&& function) const
+{
+  // If function returns true, loop breaks
+  bool result = false;
+  const auto& shape = this->getShape();
+  for (size_t y = 0; y < shape.size(); y++)
+  {
+    for (size_t x = 0; x < shape.at(y).size(); x++)
+    {
+      if (shape.at(y).at(x)) result = function(x, y);
+      if (result) break;
+    }
+    if (result) break;
+  }
+  return result;
 }
 
 

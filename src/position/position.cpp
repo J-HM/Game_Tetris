@@ -6,3 +6,9 @@ Position::Position(int x, int y)
       y_(y)
 {
 }
+
+
+const bool Position::operator==(const Position& other_position) const
+{
+  return other_position.x_ == x_ && other_position.y_ == y_;
+}

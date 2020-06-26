@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "board.hpp"
 
 
@@ -105,37 +103,33 @@ const Block::ShapeType Board::getWBhapeType(int index) const
 }
 
 
-void Board::loopABCells(std::function<bool(int, int)> function) const
+void Board::loopABCells(std::function<bool(int, int)>&& function) const
 {
-  loopBlockCell(*active_block_, [&function](int x, int y)
+  active_block_->loopCell([&function](int x, int y)
+  {
+    return function(x, y); // Returning false from function makes loop keep working
+  });
+}
+
+void Board::loopHBCells(std::function<bool(int, int)>&& function) const
+{
+  holded_block_->loopCell([&function](int x, int y)
   {
     return function(x, y); // Returning false makes loop keep working
   });
 }
 
-void Board::loopHBCells(std::function<bool(int, int)> function) const
+void Board::loopWBCells(int index, std::function<bool(int, int)>&& function) const
 {
-  loopBlockCell(*holded_block_, [&function](int x, int y)
-  {
-    return function(x, y); // Returning false makes loop keep working
-  });
-}
-
-void Board::loopWBCells(int index, std::function<bool(int, int)> function) const
-{
-  loopBlockCell(*(waiting_blocks_.at(index)), [&function](int x, int y)
+  waiting_blocks_.at(index)->loopCell([&function](int x, int y)
   {
     return function(x, y);  // Returning false makes loop keep working
   });
 }
 
-void Board::loopFragments(std::function<bool(Block::ShapeType, int, int)> function) const
-{ 
-  for (auto fragment : fragments_.getVector())
-  {
-    const auto& position = fragment->getPosition();
-    function(fragment->getShapeType(), position.x_, position.y_);
-  }
+void Board::loopFrags(std::function<bool(Fragment&, Block::ShapeType)>&& function) const
+{
+  fragments_.loopFrags(function);
 }
 
 
@@ -161,17 +155,9 @@ const bool Board::getIsSwapped() const
 }
 
 
-void Board::putABtoFrags()
+void Board::pushABtoFrags()
 {
-  const auto& shape_type = active_block_->getShapeType();
-  const auto& position = active_block_->getPosition();
-  loopBlockCell(*active_block_, [&fragments = fragments_, &shape_type, &position](int x, int y) 
-  {
-    int position_x = position.x_ + x;
-    int position_y = position.y_ + y;
-    fragments.push_back(new Fragment(Position(position_x, position_y), shape_type));
-    return false; // Returning false makes loop keep working
-  });
+  fragments_.pushBlock(*active_block_);
 }
 
 const bool Board::checkFragsLine() const
@@ -182,6 +168,7 @@ const bool Board::checkFragsLine() const
 
 void Board::deleteFragsLine(int y)
 {
+  fragments_.deleteLine(y);
   // TODO
 }
 
@@ -190,11 +177,11 @@ const bool Board::isABOnLeftWall() const
 {
   if (active_block_->getPosition().x_ > 0) 
     return false;
-  return loopBlockCell(*active_block_, [&active_block_ = active_block_](int x, int y)
+  return active_block_->loopCell([&active_block_ = active_block_](int x, int y)
   {
     if (active_block_->getPosition().x_ + x <= 0)
       return true;
-    else 
+    else
       return false;
   });
 }
@@ -203,7 +190,7 @@ const bool Board::isABOnRightWall() const
 {
   if (active_block_->getPosition().x_ + active_block_->getContainerWidth() < ab_zone_width_) 
     return false;
-  return loopBlockCell(*active_block_, [&active_block_ = active_block_](int x, int y)
+  return active_block_->loopCell([&active_block_ = active_block_](int x, int y)
   {
     if (active_block_->getPosition().x_ + x >= ab_zone_width_ - 1)
       return true;
@@ -216,7 +203,7 @@ const bool Board::isABOnBottomWall() const
 {
   if (active_block_->getPosition().y_ + active_block_->getContainerHeight() < ab_zone_height_) 
     return false;
-  return loopBlockCell(*active_block_, [&active_block_ = active_block_](int x, int y)
+  return active_block_->loopCell([&active_block_ = active_block_](int x, int y)
   {
     if (active_block_->getPosition().y_ + y >= ab_zone_height_ - 1)
       return true;
@@ -228,30 +215,11 @@ const bool Board::isABOnBottomWall() const
 
 const bool Board::isABOnFrags() const
 {
-  return loopBlockCell(*active_block_, [&active_block_ = active_block_](int x, int y)
+  return active_block_->loopCell([&active_block_ = active_block_](int x, int y)
   {
-    // Position active_block_positiom(active_block_->getPosition().x_, active_block_->getPosition().y_);
     if (active_block_->getPosition().y_ + y >= ab_zone_height_ - 1)
       return true;
     else
       return false;
   });
-}
-
-
-const bool Board::loopBlockCell(Block& block, std::function<bool(int, int)> function) const
-{
-  // If function returns true, loop breaks.
-  bool result = false;
-  const auto& shape = block.getShape();
-  for (size_t y = 0; y < shape.size(); y++)
-  {
-    for (size_t x = 0; x < shape.at(y).size(); x++)
-    {
-      if (shape.at(y).at(x)) result = function(x, y);
-      if (result) break;
-    }
-    if (result) break;
-  }
-  return result;
 }

@@ -1,5 +1,6 @@
 #include "game_view.hpp"
 
+
 using namespace sf;
 
 GameView::GameView(std::string title)
@@ -85,7 +86,7 @@ void GameView::openView() const
     if (tick_timer > lock_delay && !board_->getIsABFalling())
     {
       std::cout << "Time to stop!" << std::endl;
-      board_->putABtoFrags();
+      board_->pushABtoFrags();
       board_->popWBToAB();
       tick_timer = 0;
     }
@@ -97,8 +98,8 @@ void GameView::openView() const
     drawWBZone();
     drawAB();
     drawHB();
-    drawWB();
-    drawFragment();
+    drawWBs();
+    drawFrags();
     window_->display();
   }
 }
@@ -131,7 +132,7 @@ void GameView::drawHB() const
   });
 }
 
-void GameView::drawWB() const
+void GameView::drawWBs() const
 {
   for (int i = 0; i < Board::wb_count_; i++)
   {
@@ -195,13 +196,13 @@ void GameView::drawWBZone() const
 }
 
 
-void GameView::drawFragment() const
+void GameView::drawFrags() const
 {
-  board_->loopFragments([&window = window_] (Block::ShapeType shape_type, int x, int y) 
+  board_->loopFrags([&window = window_] (Fragment& fragment, Block::ShapeType shape_type) 
     {
       RectangleShape cell = getCell(shape_type);
-      int position_x = ab_zone_offset_x_ + x * cell_length_;
-      int position_y = ab_zone_offset_y_ + y * cell_length_;
+      int position_x = ab_zone_offset_x_ + fragment.getPosition().x_ * cell_length_;
+      int position_y = ab_zone_offset_y_ + fragment.getPosition().y_ * cell_length_;
       cell.setPosition(position_x, position_y);
       window->draw(cell);
       return false; // To not break loop

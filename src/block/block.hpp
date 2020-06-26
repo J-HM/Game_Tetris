@@ -1,11 +1,11 @@
 #ifndef BLOCK_HPP
 #define BLOCK_HPP
 
-#include <iostream> // for test code
-#include <random>
+#include <iostream>
 #include <chrono>
 #include <vector>
 #include <map>
+#include <functional>
 
 #include "../position/position.hpp"
 #include "../direction/rotation/rotation.hpp"
@@ -20,12 +20,10 @@ class Block
 {
 public:
   enum ShapeType: char {EMPTY, I, J, L, O, S, T, Z};
-
   const static ShapeType getRandomShape();
-  const static std::map<ShapeType, const ShapeList&> shpae_list_map_;
 
 private:
-  const static int shape_type_count_ = 7;
+  const static std::map<ShapeType, const ShapeList&> shpae_list_map_;
   const static ShapeList empty_shape_list_; // Declared in shape_list.cpp
   const static ShapeList i_shape_list_;
   const static ShapeList j_shape_list_;
@@ -34,6 +32,7 @@ private:
   const static ShapeList s_shape_list_;
   const static ShapeList t_shape_list_;
   const static ShapeList z_shape_list_;
+  const static int shape_type_count_ = 7;
 
 public:
   Block(const ShapeType& shape);
@@ -49,6 +48,8 @@ public:
 
   void setPosition(Position&& position);
   void setPosition(int x, int y);
+
+  const bool loopCell(std::function<bool(int, int)>&& function) const;
 
   void printStatus() const;
 

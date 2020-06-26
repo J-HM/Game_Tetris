@@ -1,6 +1,7 @@
 #ifndef BOARD_HPP
 #define BOARD_HPP
 
+#include <iostream>
 #include <vector>
 #include <queue>
 #include <algorithm>
@@ -34,17 +35,17 @@ public:
   const Block::ShapeType getHBShapeType() const;
   const Block::ShapeType getWBhapeType(int index) const;
 
-  void loopABCells(std::function<bool(int, int)> function) const;
-  void loopHBCells(std::function<bool(int, int)> function) const;
-  void loopWBCells(int index, std::function<bool(int, int)> function) const;
-  void loopFragments(std::function<bool(Block::ShapeType, int, int)> function) const;
+  void loopABCells(std::function<bool(int, int)>&& function) const;
+  void loopHBCells(std::function<bool(int, int)>&& function) const;
+  void loopWBCells(int index, std::function<bool(int, int)>&& function) const;
+  void loopFrags(std::function<bool(Fragment&, Block::ShapeType)>&& function) const;
 
   void popWBToAB();
 
   const bool getIsABFalling() const;
   const bool getIsSwapped() const;
 
-  void putABtoFrags();
+  void pushABtoFrags();
   const bool checkFragsLine() const;
   void deleteFragsLine(int y);
 
@@ -63,9 +64,7 @@ private:
 
   const bool isABOnFrags() const;
 
-  const bool searchPositionInFrags(int x, int y);
-
-  const bool loopBlockCell(Block& block, std::function<bool(int, int)> function) const;
 };
+
 
 #endif
