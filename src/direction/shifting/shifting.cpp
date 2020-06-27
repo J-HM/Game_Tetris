@@ -1,4 +1,4 @@
-#include "../shifting/shifting.h"
+#include "../shifting/shifting.hpp"
 
 Shifting::Shifting(const Value& value)
     : value_(value)

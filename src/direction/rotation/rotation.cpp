@@ -1,4 +1,4 @@
-#include "rotation.h"
+#include "rotation.hpp"
 
 Rotation::Rotation(const Value& value)
     : value_(value)

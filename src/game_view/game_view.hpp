@@ -1,10 +1,10 @@
-#ifndef GAME_VIEW_H
-#define GAME_VIEW_H
+#ifndef GAME_VIEW_HPP
+#define GAME_VIEW_HPP
 
 #include <array>
 #include <SFML/Graphics.hpp>
 
-#include "../board/board.h"
+#include "../board/board.hpp"
 
 
 class GameView
@@ -35,7 +35,9 @@ private:
 
   void drawAB() const;
   void drawHB() const;
-  void drawWB() const;
+  void drawWBs() const;
+
+  void drawFrags() const;
 
   sf::RenderWindow* window_;
   Board* board_;

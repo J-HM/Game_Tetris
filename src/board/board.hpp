@@ -1,13 +1,14 @@
-#ifndef BOARD_H
-#define BOARD_H
+#ifndef BOARD_HPP
+#define BOARD_HPP
 
+#include <iostream>
 #include <vector>
 #include <queue>
 #include <algorithm>
 #include <functional>
 
-#include "../block/block.h"
-#include "fragment/fragment.h"
+#include "../block/block.hpp"
+#include "fragments/fragments.hpp"
 
 
 class Board
@@ -24,7 +25,7 @@ public:
   Board();
   ~Board();
   
-  void holdAB();
+  void swapABwithHB();
   void moveAB(Shifting::Value direction);
   void rotateAB(Rotation::Value direction) const;
   void dropABHard();
@@ -32,22 +33,26 @@ public:
   const Position& getABPosition() const;
   const Block::ShapeType getABShapeType() const;
   const Block::ShapeType getHBShapeType() const;
-  const Block::ShapeType getWBShapeType(int index) const;
+  const Block::ShapeType getWBhapeType(int index) const;
 
-  void loopABCell(std::function<void(int, int)> function);
-  void loopHBCell(std::function<void(int, int)> function);
-  void loopWBCell(int index, std::function<void(int, int)> function);
+  void loopABCells(const std::function<bool(int, int)>& function) const;
+  void loopHBCells(const std::function<bool(int, int)>& function) const;
+  void loopWBCells(int index, const std::function<bool(int, int)>& function) const;
+  void loopFrags(std::function<bool(Fragment&, Block::ShapeType)>&& function) const;
 
-  void popBackWBSToAB();
+  void popWBToAB();
 
   const bool getIsABFalling() const;
   const bool getIsSwapped() const;
 
+  void pushABtoFrags();
+  void checkFrags();
+
 private:
-  Block* active_block_; // AB
-  Block* holded_block_; // HB
-  std::deque<Block*> waiting_blocks_; // WBS
-  std::vector<Fragment> fragments_;
+  Block* active_block_;               // AB
+  Block* holded_block_;               // HB
+  std::deque<Block*> waiting_blocks_; // WB
+  Fragments fragments_;  // Frags
 
   bool is_ab_falling_;
   bool is_swapped_;
@@ -56,9 +61,9 @@ private:
   const bool isABOnRightWall() const;
   const bool isABOnBottomWall() const;
 
-  const bool isABOnFragments() const;
+  const bool isABOnFrags() const;
 
-  void loopBlockCell(Block& block, std::function<void(int, int)> function) const;
 };
+
 
 #endif

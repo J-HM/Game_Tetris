@@ -1,4 +1,5 @@
-#include "game_view.h"
+#include "game_view.hpp"
+
 
 using namespace sf;
 
@@ -46,7 +47,7 @@ void GameView::openView() const
           board_->rotateAB(Rotation::ACW); // Rotate ACW
         }  
         else if (event.key.code == Keyboard::C)
-          board_->holdAB();                // Hold Block
+          board_->swapABwithHB();                // Hold Block
         else if (event.key.code == Keyboard::Space)
           board_->dropABHard();            // Hard Drop
         else if (event.key.code == Keyboard::Up && !is_up_pressed)
@@ -85,18 +86,21 @@ void GameView::openView() const
     if (tick_timer > lock_delay && !board_->getIsABFalling())
     {
       std::cout << "Time to stop!" << std::endl;
-      board_->popBackWBSToAB();
+      board_->pushABtoFrags();
+      board_->checkFrags();
+      board_->popWBToAB();
       tick_timer = 0;
     }
 
     // Draw precess //
-    window_->clear(Color(191, 191, 191));
+    window_->clear(Color(233, 255, 233));
     drawABZone();
     drawHBZone();
     drawWBZone();
     drawAB();
     drawHB();
-    drawWB();
+    drawWBs();
+    drawFrags();
     window_->display();
   }
 }
@@ -104,37 +108,43 @@ void GameView::openView() const
 
 void GameView::drawAB() const
 {
-  RectangleShape grid = getCell(board_->getABShapeType());
+  RectangleShape cell = getCell(board_->getABShapeType());
   const Position& block_position = board_->getABPosition();
-  board_->loopABCell([&] (int x, int y) {
+  board_->loopABCells([&cell, &block_position, &window = window_] (int x, int y)
+  {
     int position_x = ab_zone_offset_x_ + (block_position.x_ + x) * cell_length_;
     int position_y = ab_zone_offset_y_ + (block_position.y_ + y) * cell_length_;
-    grid.setPosition(position_x, position_y);
-    window_->draw(grid);
+    cell.setPosition(position_x, position_y);
+    window->draw(cell);
+    return false; // Will not End
   });
 }
 
 void GameView::drawHB() const
 {
-  RectangleShape grid = getCell(board_->getHBShapeType());
-  board_->loopHBCell([&] (int x, int y) {
+  RectangleShape cell = getCell(board_->getHBShapeType());
+  board_->loopHBCells([&cell, &window = window_] (int x, int y)
+  {
     int position_x = hb_zone_offset_x_ + x * cell_length_;
     int position_y = hb_zone_offset_y_ + y * cell_length_;
-    grid.setPosition(position_x, position_y);
-    window_->draw(grid);
+    cell.setPosition(position_x, position_y);
+    window->draw(cell);
+    return false; // To not break loop
   });
 }
 
-void GameView::drawWB() const
+void GameView::drawWBs() const
 {
   for (int i = 0; i < Board::wb_count_; i++)
   {
-    RectangleShape grid = getCell(board_->getWBShapeType(i));
-    board_->loopWBCell(i, [&] (int x, int y) {
+    RectangleShape cell = getCell(board_->getWBhapeType(i));
+    board_->loopWBCells(i, [i, &cell, &window = window_] (int x, int y)
+    {
       int position_x = wb_zone_offset_x_ + cell_length_ * x;
       int position_y = wb_zone_offset_y_ + cell_length_ * (y + i * 5);
-      grid.setPosition(position_x, position_y);
-      window_->draw(grid);
+      cell.setPosition(position_x, position_y);
+      window->draw(cell);
+      return false; // To not break loop
     });
   }
 }
@@ -142,73 +152,97 @@ void GameView::drawWB() const
 
 void GameView::drawABZone() const
 {
-  RectangleShape grid = getCell(Block::EMPTY);
+  RectangleShape cell = getCell(Block::EMPTY);
   for (int i = 0; i < Board::ab_zone_height_; i++)
   {
     for (int j = 0; j < Board::ab_zone_width_; j++)
     {
       int position_x = ab_zone_offset_x_ + j * cell_length_;
       int position_y = ab_zone_offset_y_ + i * cell_length_;
-      grid.setPosition(position_x, position_y);
-      window_->draw(grid);
+      cell.setPosition(position_x, position_y);
+      window_->draw(cell);
     }
   }
 }
 
 void GameView::drawHBZone() const
 {
-  RectangleShape grid = getCell(Block::EMPTY);
+  RectangleShape cell = getCell(Block::EMPTY);
   for (int i = 0; i < Board::hb_zone_height_; i++)
   {
     for (int j = 0; j < Board::hb_zone_width_; j++)
     {
       int position_x = hb_zone_offset_x_ + j * cell_length_;
       int position_y = hb_zone_offset_y_ + i * cell_length_;
-      grid.setPosition(position_x, position_y);
-      window_->draw(grid);
+      cell.setPosition(position_x, position_y);
+      window_->draw(cell);
     }
   }
 }
 
 void GameView::drawWBZone() const
 {
-  RectangleShape grid = getCell(Block::EMPTY);
+  RectangleShape cell = getCell(Block::EMPTY);
   for (int i = 1; i < Board::wb_zone_height_; i++)
   {
     for (int j = 0; j < Board::wb_zone_width_; j++)
     {
       int position_x = wb_zone_offset_x_ + j * cell_length_;
       int position_y = wb_zone_offset_y_ + (i - 1) * cell_length_;
-      grid.setPosition(position_x, position_y);
-      window_->draw(grid);
+      cell.setPosition(position_x, position_y);
+      window_->draw(cell);
     }
     if (i % 5 == 4) i += 1;
   }
 }
 
 
+void GameView::drawFrags() const
+{
+  board_->loopFrags([&window = window_] (Fragment& fragment, Block::ShapeType shape_type) 
+    {
+      RectangleShape cell = getCell(shape_type);
+      int position_x = ab_zone_offset_x_ + fragment.getPosition().x_ * cell_length_;
+      int position_y = ab_zone_offset_y_ + fragment.getPosition().y_ * cell_length_;
+      cell.setPosition(position_x, position_y);
+      window->draw(cell);
+      return false; // To not break loop
+    }
+  );
+}
+
+
 const sf::RectangleShape GameView::getCell(Block::ShapeType shape_type)
 {
-  RectangleShape grid(Vector2f(cell_length_, cell_length_));
+  RectangleShape cell(Vector2f(cell_length_ - 2, cell_length_ - 2));
   switch (shape_type)
   {
     case Block::EMPTY:
-      grid.setFillColor(Color(254, 254, 254));
+      cell.setFillColor(Color(55, 55, 55));
       break;
     case Block::I:
-      grid.setFillColor(Color(0, 255, 255));
+      cell.setFillColor(Color(0, 255, 255));
       break;
     case Block::J:
-      grid.setFillColor(Color(0, 0, 255));
+      cell.setFillColor(Color(0, 0, 255));
       break;
     case Block::L:
-      grid.setFillColor(Color(255, 127, 0));
+      cell.setFillColor(Color(255, 127, 0));
       break;
     case Block::O:
-      grid.setFillColor(Color(255, 255, 0));
+      cell.setFillColor(Color(255, 255, 0));
+      break;
+    case Block::S:
+      cell.setFillColor(Color(0, 255, 0));
+      break;
+    case Block::T:
+      cell.setFillColor(Color(127, 0, 255));
+      break;
+    case Block::Z:
+      cell.setFillColor(Color(255, 0, 0));
       break;
   }
-  grid.setOutlineColor(Color(193, 193, 193));
-  grid.setOutlineThickness(0.6);
-  return grid;
+  cell.setOutlineColor(Color(33, 33, 33));
+  cell.setOutlineThickness(1);
+  return cell;
 }

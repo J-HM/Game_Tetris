@@ -1,6 +1,4 @@
-#include <iostream>
-
-#include "board.h"
+#include "board.hpp"
 
 
 Board::Board()
@@ -12,7 +10,7 @@ Board::Board()
       is_swapped_(false)
 {
   for (int i = 0; i < wb_count_; i++)
-    waiting_blocks_.push_back(new Block(Block::getRandomShape(i)));
+    waiting_blocks_.push_back(new Block(Block::getRandomShape()));
 }
 
 Board::~Board()
@@ -22,10 +20,11 @@ Board::~Board()
 }
 
 
-void Board::holdAB()
+void Board::swapABwithHB()
 {
-  std::cout << "Hold block:" << std::endl;
-  active_block_->setPosition(3, 0);
+  if (is_swapped_) return void();
+  std::cout << "Swap block:" << std::endl;
+  active_block_->setPosition(Position(3, 0));
   std::swap(active_block_, holded_block_);
   if (active_block_->getShapeType() == Block::EMPTY)
   {
@@ -34,7 +33,8 @@ void Board::holdAB()
     waiting_blocks_.pop_front();
     waiting_blocks_.push_back(new Block(Block::getRandomShape()));
   }
-  active_block_->printInfo();
+  is_swapped_ = true;
+  active_block_->printStatus();
 }
 
 void Board::moveAB(Shifting::Value direction)
@@ -57,7 +57,7 @@ void Board::moveAB(Shifting::Value direction)
   {
     std::cout << "Warning: Wrong direction." << std::endl;
   }
-  active_block_->printInfo();
+  active_block_->printStatus();
 }
 
 void Board::rotateAB(Rotation::Value direction) const
@@ -72,7 +72,7 @@ void Board::rotateAB(Rotation::Value direction) const
   {
     active_block_->rotateBlock(Rotation::ACW);
   }
-  active_block_->printInfo();
+  active_block_->printStatus();
 }
 
 void Board::dropABHard()
@@ -97,42 +97,52 @@ const Block::ShapeType Board::getHBShapeType() const
   return holded_block_->getShapeType();
 }
 
-const Block::ShapeType Board::getWBShapeType(int index) const
+const Block::ShapeType Board::getWBhapeType(int index) const
 {
   return waiting_blocks_.at(index)->getShapeType();
 }
 
 
-void Board::loopABCell(std::function<void(int, int)> function)
+void Board::loopABCells(const std::function<bool(int, int)>& function) const
 {
-  loopBlockCell(*active_block_, [&function](int i, int j){
-    function(j, i);
+  active_block_->loopCell([&function](int x, int y)
+  {
+    return function(x, y); // Returning false from function makes loop keep working
   });
 }
 
-void Board::loopHBCell(std::function<void(int, int)> function)
+void Board::loopHBCells(const std::function<bool(int, int)>& function) const
 {
-  loopBlockCell(*holded_block_, [&function](int i, int j){
-    function(j, i);
+  holded_block_->loopCell([&function](int x, int y)
+  {
+    return function(x, y); // Returning false makes loop keep working
   });
 }
 
-void Board::loopWBCell(int index, std::function<void(int, int)> function)
+void Board::loopWBCells(int index, const std::function<bool(int, int)>& function) const
 {
-  loopBlockCell(*(waiting_blocks_.at(index)), [&function](int i, int j){
-    function(j, i);
+  waiting_blocks_.at(index)->loopCell([&function](int x, int y)
+  {
+    return function(x, y);  // Returning false makes loop keep working
   });
 }
 
+void Board::loopFrags(std::function<bool(Fragment&, Block::ShapeType)>&& function) const
+{
+  fragments_.loopFrags(function);
+}
 
-void Board::popBackWBSToAB()
+
+void Board::popWBToAB()
 {
   is_ab_falling_ = true;
   delete active_block_;
   active_block_ = *(waiting_blocks_.begin());
   waiting_blocks_.pop_front();
   waiting_blocks_.push_back(new Block(Block::getRandomShape()));
+  is_swapped_ = false;
 }
+
 
 const bool Board::getIsABFalling() const
 {
@@ -144,51 +154,74 @@ const bool Board::getIsSwapped() const
   return is_swapped_;
 }
 
-// private //
+
+void Board::pushABtoFrags()
+{
+  fragments_.pushBlock(*active_block_);
+}
+
+void Board::checkFrags()
+{
+  int highest_frag_position_y = fragments_.getHighestFrag().getPosition().y_;
+  for (int i = highest_frag_position_y; i < ab_zone_height_; i++)
+  {
+    if (fragments_.isFullRow(i))
+    {
+      fragments_.clearRow(i);
+      for (int j = i - 1; j >= highest_frag_position_y; j--)
+        fragments_.moveDownRow(j);
+    }
+  }
+}
+
+
 const bool Board::isABOnLeftWall() const
 {
-  bool is_ab_on_left_wall = false;
-  loopBlockCell(*active_block_, [this, &is_ab_on_left_wall](int i, int j){
-    if (active_block_->getPosition().x_ + j <= 0)
-      is_ab_on_left_wall = true;
+  if (active_block_->getPosition().x_ > 0) 
+    return false;
+  return active_block_->loopCell([&active_block_ = active_block_](int x, int y)
+  {
+    if (active_block_->getPosition().x_ + x <= 0)
+      return true;
+    else
+      return false;
   });
-  return is_ab_on_left_wall;
 }
 
 const bool Board::isABOnRightWall() const
 {
-  bool is_ab_on_right_wall = false;
-  loopBlockCell(*active_block_, [this, &is_ab_on_right_wall](int i, int j){
-    if (active_block_->getPosition().x_ + j >= ab_zone_width_ - 1)
-      is_ab_on_right_wall = true;
+  if (active_block_->getPosition().x_ + active_block_->getContainerWidth() < ab_zone_width_) 
+    return false;
+  return active_block_->loopCell([&active_block_ = active_block_](int x, int y)
+  {
+    if (active_block_->getPosition().x_ + x >= ab_zone_width_ - 1)
+      return true;
+    else
+      return false;
   });
-  return is_ab_on_right_wall;
 }
 
 const bool Board::isABOnBottomWall() const
 {
-  bool is_ab_on_bottom_wall = false;
-  loopBlockCell(*active_block_, [this, &is_ab_on_bottom_wall](int i, int j){
-    if (active_block_->getPosition().y_ + i >= ab_zone_height_ - 1)
-      is_ab_on_bottom_wall = true;
+  if (active_block_->getPosition().y_ + active_block_->getContainerHeight() < ab_zone_height_) 
+    return false;
+  return active_block_->loopCell([&active_block_ = active_block_](int x, int y)
+  {
+    if (active_block_->getPosition().y_ + y >= ab_zone_height_ - 1)
+      return true;
+    else
+      return false;
   });
-  return is_ab_on_bottom_wall;
 }
 
 
-const bool Board::isABOnFragments() const
+const bool Board::isABOnFrags() const
 {
-  const auto& shape = active_block_->getShape();
-
-  return false;
-}
-
-
-void Board::loopBlockCell(Block& block, std::function<void(int, int)> function) const
-{
-  const auto& shape = block.getShape();
-  for (unsigned int i = 0; i < shape.size(); i++)
-    for (unsigned int j = 0; j < shape.at(i).size(); j++)
-      if (shape.at(i).at(j))
-        function(i, j);
+  return active_block_->loopCell([&active_block_ = active_block_](int x, int y)
+  {
+    if (active_block_->getPosition().y_ + y >= ab_zone_height_ - 1)
+      return true;
+    else
+      return false;
+  });
 }
