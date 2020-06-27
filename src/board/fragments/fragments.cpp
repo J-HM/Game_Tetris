@@ -20,8 +20,8 @@ void Fragments::clearRow(int y)
 {
   fragments_.remove_if([&y](const Fragment* fragment)
   {
-      if (fragment->getPosition().y_ == y) return true;
-      else return false;
+    if (fragment->getPosition().y_ == y) return true;
+    else return false;
   });
 }
 
@@ -35,7 +35,7 @@ void Fragments::moveDownRow(int y)
       continue;
     if (frag_position_y > y)
       break;
-    if (frag_position_y == y) 
+    if (frag_position_y == y)
       (*iterator)->setPosition(Position(frag_position_x, frag_position_y + 1));
   }
 }
@@ -49,7 +49,6 @@ const Fragment& Fragments::getHighestFrag() const
 
 void Fragments::refreshSurfaceFrags()
 {
-  
 }
 
 
