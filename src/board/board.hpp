@@ -35,9 +35,9 @@ public:
   const Block::ShapeType getHBShapeType() const;
   const Block::ShapeType getWBhapeType(int index) const;
 
-  void loopABCells(std::function<bool(int, int)>&& function) const;
-  void loopHBCells(std::function<bool(int, int)>&& function) const;
-  void loopWBCells(int index, std::function<bool(int, int)>&& function) const;
+  void loopABCells(const std::function<bool(int, int)>& function) const;
+  void loopHBCells(const std::function<bool(int, int)>& function) const;
+  void loopWBCells(int index, const std::function<bool(int, int)>& function) const;
   void loopFrags(std::function<bool(Fragment&, Block::ShapeType)>&& function) const;
 
   void popWBToAB();
@@ -46,8 +46,7 @@ public:
   const bool getIsSwapped() const;
 
   void pushABtoFrags();
-  const bool checkFragsLine() const;
-  void deleteFragsLine(int y);
+  void checkFrags();
 
 private:
   Block* active_block_;               // AB

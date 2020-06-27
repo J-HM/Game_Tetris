@@ -12,24 +12,23 @@ using fragments_iterator = std::list<Fragment*>::const_iterator;
 class Fragments
 {
 public:
-  const bool checkLine(int y) const;
-  void deleteLine(int y);
+  Fragments() : fragments_() {}
 
-  const std::list<Fragment*>& getSurfaceFrags() const;
+  const bool isFullRow(int y) const;
+  void clearRow(int y);
+  void moveDownRow(int y);
+
+  const Fragment& getHighestFrag() const;
   void refreshSurfaceFrags();
-
-  const Fragment getHighestFrag();
 
   void pushBlock(Block& block);
 
-  const bool loopFrags(std::function<bool(Fragment&, Block::ShapeType)>& function) const;
-  
+  const bool loopFrags(const std::function<bool(Fragment&, Block::ShapeType)>& function) const;
+  const bool loopSurfaceFrags(const std::function<bool(Fragment&)>& function) const;
+
 private:
   std::list<Fragment*> fragments_;
   std::list<Fragment*> surface_fragments_;
-
-  fragments_iterator findFragBy(const Position& position) const;
-  const bool deleteFrag(const Position& position);
 };
 
 

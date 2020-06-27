@@ -87,6 +87,7 @@ void GameView::openView() const
     {
       std::cout << "Time to stop!" << std::endl;
       board_->pushABtoFrags();
+      board_->checkFrags();
       board_->popWBToAB();
       tick_timer = 0;
     }
@@ -235,7 +236,7 @@ const sf::RectangleShape GameView::getCell(Block::ShapeType shape_type)
       cell.setFillColor(Color(0, 255, 0));
       break;
     case Block::T:
-      cell.setFillColor(Color(128, 255, 128));
+      cell.setFillColor(Color(127, 0, 255));
       break;
     case Block::Z:
       cell.setFillColor(Color(255, 0, 0));

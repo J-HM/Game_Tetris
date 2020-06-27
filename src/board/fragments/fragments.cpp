@@ -2,30 +2,50 @@
 #include "../board.hpp"
 
 
-const bool Fragments::checkLine(int y) const
+const bool Fragments::isFullRow(int y) const
 {
-  for (int x = 0; x < Board::ab_zone_width_; x++)
+  int frag_count = 0;
+  for (auto iterator = fragments_.begin(); iterator != fragments_.end(); iterator++)
   {
-    Position position(x, y);
-    if (findFragBy(position) == fragments_.end()) 
-      return false;
+    int frag_position_y = (*iterator)->getPosition().y_;
+    if (frag_position_y < y) continue;
+    if (frag_position_y > y) break;
+    if (frag_position_y == y) frag_count++;
+    if (frag_count == Board::ab_zone_width_) return true;
   }
-  return true;
+  return false;
 }
 
-void Fragments::deleteLine(int y)
+void Fragments::clearRow(int y)
 {
-  for (int x = 0; x < Board::ab_zone_width_; x++)
+  fragments_.remove_if([&y](const Fragment* fragment)
   {
-    deleteFrag(Position(x, y));
+      if (fragment->getPosition().y_ == y) return true;
+      else return false;
+  });
+}
+
+void Fragments::moveDownRow(int y)
+{
+  for (auto iterator = fragments_.begin(); iterator != fragments_.end(); iterator++)
+  {
+    int frag_position_x = (*iterator)->getPosition().x_;
+    int frag_position_y = (*iterator)->getPosition().y_;
+    if (frag_position_y < y) 
+      continue;
+    if (frag_position_y > y)
+      break;
+    if (frag_position_y == y) 
+      (*iterator)->setPosition(Position(frag_position_x, frag_position_y + 1));
   }
 }
 
 
-const std::list<Fragment*>& Fragments::getSurfaceFrags() const
+const Fragment& Fragments::getHighestFrag() const
 {
-  return surface_fragments_;
+  return **(fragments_.cbegin());
 }
+
 
 void Fragments::refreshSurfaceFrags()
 {
@@ -41,14 +61,25 @@ void Fragments::pushBlock(Block& block)
   {
     int position_x = position.x_ + x;
     int position_y = position.y_ + y;
-    fragments.push_back(new Fragment(Position(position_x, position_y), shape_type));
-    return false; // Returning false makes loop keep working
+    Fragment* fragment = new Fragment(Position(position_x, position_y), shape_type);
+    if (fragments.empty()) 
+    {
+      fragments.push_back(fragment);
+      return false;
+    }
+    fragments_iterator iterator = fragments.begin();
+    while (iterator != fragments.end())
+    {
+      if (position_y < (*iterator)->getPosition().y_) break;
+      iterator++;
+    }
+    fragments.insert(iterator, fragment);
+    return false;
   });
 }
 
 
-const bool Fragments::loopFrags(
-  std::function<bool(Fragment&, Block::ShapeType)>& function) const
+const bool Fragments::loopFrags(const std::function<bool(Fragment&, Block::ShapeType)>& function) const
 {
   bool result = false;
   for (const auto& fragment : fragments_)
@@ -59,21 +90,13 @@ const bool Fragments::loopFrags(
   return result;
 }
 
-
-fragments_iterator Fragments::findFragBy(const Position& position) const
+const bool Fragments::loopSurfaceFrags(const std::function<bool(Fragment&)>& function) const
 {
-  for(fragments_iterator iterator = fragments_.begin(); iterator != fragments_.end(); iterator++)
-    if (position == (*iterator)->getPosition())
-      return iterator;
-  return fragments_.end();
-}
-
-
-const bool Fragments::deleteFrag(const Position& position)
-{
-  fragments_iterator iterator = findFragBy(position);
-  if (iterator != fragments_.end())
-    return false;
-  fragments_.erase(iterator);
-  return true;
+  bool result = false;
+  for (const auto& fragment : surface_fragments_)
+  {
+    result = function(*fragment);
+    if (result) break; // If function returns true, this loop break.
+  }
+  return result;
 }

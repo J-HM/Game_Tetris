@@ -103,7 +103,7 @@ const Block::ShapeType Board::getWBhapeType(int index) const
 }
 
 
-void Board::loopABCells(std::function<bool(int, int)>&& function) const
+void Board::loopABCells(const std::function<bool(int, int)>& function) const
 {
   active_block_->loopCell([&function](int x, int y)
   {
@@ -111,7 +111,7 @@ void Board::loopABCells(std::function<bool(int, int)>&& function) const
   });
 }
 
-void Board::loopHBCells(std::function<bool(int, int)>&& function) const
+void Board::loopHBCells(const std::function<bool(int, int)>& function) const
 {
   holded_block_->loopCell([&function](int x, int y)
   {
@@ -119,7 +119,7 @@ void Board::loopHBCells(std::function<bool(int, int)>&& function) const
   });
 }
 
-void Board::loopWBCells(int index, std::function<bool(int, int)>&& function) const
+void Board::loopWBCells(int index, const std::function<bool(int, int)>& function) const
 {
   waiting_blocks_.at(index)->loopCell([&function](int x, int y)
   {
@@ -160,16 +160,18 @@ void Board::pushABtoFrags()
   fragments_.pushBlock(*active_block_);
 }
 
-const bool Board::checkFragsLine() const
+void Board::checkFrags()
 {
-  // TODO
-  return false;
-}
-
-void Board::deleteFragsLine(int y)
-{
-  fragments_.deleteLine(y);
-  // TODO
+  int highest_frag_position_y = fragments_.getHighestFrag().getPosition().y_;
+  for (int i = highest_frag_position_y; i < ab_zone_height_; i++)
+  {
+    if (fragments_.isFullRow(i))
+    {
+      fragments_.clearRow(i);
+      for (int j = i - 1; j >= highest_frag_position_y; j--)
+        fragments_.moveDownRow(j);
+    }
+  }
 }
 
 
