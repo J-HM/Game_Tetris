@@ -8,7 +8,7 @@
 class Fragment
 {
 public:
-  Fragment(Position position, Block::ShapeType shpae_type);
+  Fragment(Position position, Block::ShapeType shpae_type = Block::EMPTY);
   
   void setPosition(Position position);
 

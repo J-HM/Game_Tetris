@@ -48,7 +48,9 @@
     "stdexcept": "cpp",
     "streambuf": "cpp",
     "typeinfo": "cpp",
-    "list": "cpp"
+    "list": "cpp",
+    "any": "cpp",
+    "variant": "cpp"
   },
   "editor.rulers": [
     95

@@ -49,6 +49,10 @@ const Fragment& Fragments::getHighestFrag() const
 
 void Fragments::refreshSurfaceFrags()
 {
+  for (auto iterator = fragments_.begin(); iterator != fragments_.end(); iterator++)
+  {
+
+  }
 }
 
 
@@ -75,6 +79,19 @@ void Fragments::pushBlock(Block& block)
     fragments.insert(iterator, fragment);
     return false;
   });
+}
+
+
+std::optional<Fragment*> Fragments::findFragByPosition(const Position position) const
+{
+  auto iterator = std::find_if(fragments_.begin(), fragments_.end(), [&position](Fragment* fragment)
+  {
+    return fragment->getPosition() == position;
+  });
+  if (iterator == fragments_.end())
+    return {};
+  else
+    return *iterator;
 }
 
 

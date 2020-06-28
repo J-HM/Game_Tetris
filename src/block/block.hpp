@@ -2,10 +2,10 @@
 #define BLOCK_HPP
 
 #include <iostream>
+#include <functional>
 #include <chrono>
 #include <vector>
 #include <map>
-#include <functional>
 
 #include "../position/position.hpp"
 #include "../direction/rotation/rotation.hpp"

@@ -158,6 +158,17 @@ const bool Board::getIsSwapped() const
 void Board::pushABtoFrags()
 {
   fragments_.pushBlock(*active_block_);
+  auto fragment = fragments_.findFragByPosition(Position(4,18));
+  if (fragment)
+  {
+    fragment.value()->getPosition().x_;
+    std::cout << "yes" << std::endl;
+  }
+  else
+  {
+    std::cout << "nono" << std::endl;
+  }
+  
 }
 
 void Board::checkFrags()
