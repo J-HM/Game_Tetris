@@ -41,9 +41,10 @@ void Fragments::moveDownRow(int y)
 }
 
 
-const Fragment& Fragments::getHighestFrag() const
+std::optional<Fragment*> Fragments::getHighestFrag() const
 {
-  return **(fragments_.cbegin());
+  if (fragments_.size() == 0) return {};
+  return *(fragments_.cbegin());
 }
 
 

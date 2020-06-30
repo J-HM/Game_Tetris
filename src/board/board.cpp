@@ -42,16 +42,21 @@ void Board::moveAB(Shifting::Value direction)
   std::cout << "Move block: " << std::endl;
   if (direction == Shifting::LEFT)
   {
-    if (!isABOnLeftWall()) active_block_->moveBlock(Shifting::LEFT);
+    if (!isABOnLeftWall() && !isFragsOnLeftAB())
+      active_block_->moveBlock(Shifting::LEFT);
   }
   else if (direction == Shifting::RIGHT)
   {
-    if (!isABOnRightWall()) active_block_->moveBlock(Shifting::RIGHT);
+    if (!isABOnRightWall() && !isFragsOnRightAB())
+      active_block_->moveBlock(Shifting::RIGHT);
   }
   else if (direction == Shifting::DOWN)
   {
-    if (!isABOnBottomWall()) active_block_->moveBlock(Shifting::DOWN);
-    else is_ab_falling_ = false;
+    std::cout << isFragsOnUnderAB() << std::endl;
+    if (!isABOnBottomWall() && !isFragsOnUnderAB())
+      active_block_->moveBlock(Shifting::DOWN);
+    else
+      is_ab_falling_ = false;
   }
   else
   {
@@ -158,22 +163,13 @@ const bool Board::getIsSwapped() const
 void Board::pushABtoFrags()
 {
   fragments_.pushBlock(*active_block_);
-  auto fragment = fragments_.findFragByPosition(Position(4,18));
-  if (fragment)
-  {
-    fragment.value()->getPosition().x_;
-    std::cout << "yes" << std::endl;
-  }
-  else
-  {
-    std::cout << "nono" << std::endl;
-  }
-  
 }
 
 void Board::checkFrags()
 {
-  int highest_frag_position_y = fragments_.getHighestFrag().getPosition().y_;
+  const auto& highest_frag = fragments_.getHighestFrag();
+  if (!highest_frag.has_value()) return void();
+  const auto& highest_frag_position_y = highest_frag.value()->getPosition().y_;
   for (int i = highest_frag_position_y; i < ab_zone_height_; i++)
   {
     if (fragments_.isFullRow(i))
@@ -188,11 +184,12 @@ void Board::checkFrags()
 
 const bool Board::isABOnLeftWall() const
 {
-  if (active_block_->getPosition().x_ > 0) 
+  const int ab_position_x = active_block_->getPosition().x_;
+  if (ab_position_x > 0) 
     return false;
-  return active_block_->loopCell([&active_block_ = active_block_](int x, int y)
+  return active_block_->loopCell([&ab_position_x](int x, int y)
   {
-    if (active_block_->getPosition().x_ + x <= 0)
+    if (ab_position_x + x <= 0)
       return true;
     else
       return false;
@@ -201,11 +198,12 @@ const bool Board::isABOnLeftWall() const
 
 const bool Board::isABOnRightWall() const
 {
-  if (active_block_->getPosition().x_ + active_block_->getContainerWidth() < ab_zone_width_) 
+  const int ab_position_x = active_block_->getPosition().x_;
+  if (ab_position_x + active_block_->getContainerWidth() < ab_zone_width_) 
     return false;
-  return active_block_->loopCell([&active_block_ = active_block_](int x, int y)
+  return active_block_->loopCell([&ab_position_x](int x, int y)
   {
-    if (active_block_->getPosition().x_ + x >= ab_zone_width_ - 1)
+    if (ab_position_x + x >= ab_zone_width_ - 1)
       return true;
     else
       return false;
@@ -214,11 +212,12 @@ const bool Board::isABOnRightWall() const
 
 const bool Board::isABOnBottomWall() const
 {
-  if (active_block_->getPosition().y_ + active_block_->getContainerHeight() < ab_zone_height_) 
+  const int ab_position_y = active_block_->getPosition().y_;
+  if (ab_position_y + active_block_->getContainerHeight() < ab_zone_height_) 
     return false;
-  return active_block_->loopCell([&active_block_ = active_block_](int x, int y)
+  return active_block_->loopCell([&ab_position_y](int x, int y)
   {
-    if (active_block_->getPosition().y_ + y >= ab_zone_height_ - 1)
+    if (ab_position_y + y >= ab_zone_height_ - 1)
       return true;
     else
       return false;
@@ -226,11 +225,57 @@ const bool Board::isABOnBottomWall() const
 }
 
 
-const bool Board::isABOnFrags() const
+const bool Board::isFragsOnLeftAB() const
 {
-  return active_block_->loopCell([&active_block_ = active_block_](int x, int y)
+  const auto& ab_position = active_block_->getPosition();
+  const auto& highest_frag = fragments_.getHighestFrag();
+  if (!highest_frag.has_value()) 
+    return false;
+  const auto& highest_frag_position_y = highest_frag.value()->getPosition().y_;
+  if (ab_position.y_ + active_block_->getContainerHeight() < highest_frag_position_y)
+    return false;
+  return active_block_->loopCell([&fragments = fragments_, &ab_position](int x, int y)
   {
-    if (active_block_->getPosition().y_ + y >= ab_zone_height_ - 1)
+    Position cell_position = Position(ab_position.x_ + x - 1, ab_position.y_ + y);
+    if (fragments.findFragByPosition(cell_position).has_value())
+      return true;
+    else
+      return false;
+  });
+}
+
+const bool Board::isFragsOnRightAB() const
+{
+  const auto& ab_position = active_block_->getPosition();
+  const auto& highest_frag = fragments_.getHighestFrag();
+  if (!highest_frag.has_value()) 
+    return false;
+  const auto& highest_frag_position_y = highest_frag.value()->getPosition().y_;
+  if (ab_position.y_ + active_block_->getContainerHeight() < highest_frag_position_y)
+    return false;
+  return active_block_->loopCell([&fragments = fragments_, &ab_position](int x, int y)
+  {
+    Position cell_position = Position(ab_position.x_ + x + 1, ab_position.y_ + y);
+    if (fragments.findFragByPosition(cell_position).has_value())
+      return true;
+    else
+      return false;
+  });
+}
+
+const bool Board::isFragsOnUnderAB() const
+{
+  const auto& ab_position = active_block_->getPosition();
+  const auto& highest_frag = fragments_.getHighestFrag();
+  if (!highest_frag.has_value()) 
+    return false;
+  const auto& highest_frag_position_y = highest_frag.value()->getPosition().y_;
+  if (ab_position.y_ + active_block_->getContainerHeight() < highest_frag_position_y)
+    return false;
+  return active_block_->loopCell([&fragments = fragments_, &ab_position](int x, int y)
+  {
+    Position cell_position = Position(ab_position.x_ + x, ab_position.y_ + y + 1);
+    if (fragments.findFragByPosition(cell_position).has_value())
       return true;
     else
       return false;

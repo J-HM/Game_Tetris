@@ -17,7 +17,7 @@ public:
   void clearRow(int y);
   void moveDownRow(int y);
 
-  const Fragment& getHighestFrag() const;
+  std::optional<Fragment*> getHighestFrag() const;
   
   void refreshSurfaceFrags();
 

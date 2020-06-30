@@ -61,8 +61,9 @@ private:
   const bool isABOnRightWall() const;
   const bool isABOnBottomWall() const;
 
-  const bool isABOnFrags() const;
-
+  const bool isFragsOnLeftAB() const;
+  const bool isFragsOnRightAB() const;
+  const bool isFragsOnUnderAB() const;
 };
 
 
