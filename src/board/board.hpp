@@ -4,12 +4,17 @@
 #include <iostream>
 #include <vector>
 #include <queue>
+#include <map>
+#include <utility>
+#include <array>
 #include <algorithm>
 #include <functional>
 
 #include "../block/block.hpp"
 #include "fragments/fragments.hpp"
 
+
+using WallKickTable = std::map<std::pair<int, int>, std::array<const Position, 5>>;
 
 class Board
 {
@@ -22,12 +27,17 @@ public:
   static const int wb_zone_width_ = 4;
   static const int wb_zone_height_ = 15;
 
+private:
+  static const WallKickTable block_wall_kick_table;
+  static const WallKickTable i_block_wall_kick_table;
+
+public:
   Board();
   ~Board();
   
   void swapABwithHB();
   void moveAB(Shifting::Value direction);
-  void rotateAB(Rotation::Value direction) const;
+  void rotateAB(Rotation::Value direction);
   void dropABHard();
 
   const Position& getABPosition() const;
@@ -64,6 +74,8 @@ private:
   const bool isFragsOnLeftAB() const;
   const bool isFragsOnRightAB() const;
   const bool isFragsOnUnderAB() const;
+
+  void kickWall(const std::pair<int, int>& index_pair);
 };
 
 

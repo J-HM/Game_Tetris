@@ -8,6 +8,7 @@ public:
   Position(int x = 0, int y = 0);
 
   const bool operator==(const Position& other_position) const; 
+  const Position operator+(const Position& other_position) const;
 
   int x_;
   int y_;

@@ -39,7 +39,7 @@ void Board::swapABwithHB()
 
 void Board::moveAB(Shifting::Value direction)
 {
-  std::cout << "Move block: " << std::endl;
+  //std::cout << "Move block: " << std::endl;
   if (direction == Shifting::LEFT)
   {
     if (!isABOnLeftWall() && !isFragsOnLeftAB())
@@ -52,7 +52,6 @@ void Board::moveAB(Shifting::Value direction)
   }
   else if (direction == Shifting::DOWN)
   {
-    std::cout << isFragsOnUnderAB() << std::endl;
     if (!isABOnBottomWall() && !isFragsOnUnderAB())
       active_block_->moveBlock(Shifting::DOWN);
     else
@@ -62,21 +61,19 @@ void Board::moveAB(Shifting::Value direction)
   {
     std::cout << "Warning: Wrong direction." << std::endl;
   }
-  active_block_->printStatus();
+  //active_block_->printStatus();
 }
 
-void Board::rotateAB(Rotation::Value direction) const
+void Board::rotateAB(Rotation::Value direction)
 {
-  // TODO wall kick
   std::cout << "Rotate block Left: " << std::endl;
+  auto source = active_block_->getShapeIndex().getIndex();
   if (direction == Rotation::CW)
-  {
     active_block_->rotateBlock(Rotation::CW);
-  }
   if (direction == Rotation::ACW)
-  {
     active_block_->rotateBlock(Rotation::ACW);
-  }
+  auto destination = active_block_->getShapeIndex().getIndex();
+  kickWall({source, destination});
   active_block_->printStatus();
 }
 
@@ -280,4 +277,23 @@ const bool Board::isFragsOnUnderAB() const
     else
       return false;
   });
+}
+
+
+void Board::kickWall(const std::pair<int, int>& index_pair)
+{
+  const auto& ab_position = active_block_->getPosition();
+  const auto& delta_positions = block_wall_kick_table.find(index_pair)->second;
+  if (active_block_->getShapeType() == Block::I)
+  {
+    for (int i = 0; i < 5; i++)
+    {
+      const auto& result_position = ab_position + delta_positions.at(i);
+      
+    }
+  }
+  else
+  {
+    
+  } 
 }

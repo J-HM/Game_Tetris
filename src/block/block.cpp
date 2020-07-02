@@ -70,6 +70,11 @@ const Block::ShapeType& Block::getShapeType() const
   return shape_type_;
 }
 
+const ShapeIndex& Block::getShapeIndex() const
+{
+  return shape_index_; 
+}
+
 const int Block::getContainerWidth() const
 {
   return getShape().at(0).size();

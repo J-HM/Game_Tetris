@@ -43,6 +43,7 @@ public:
   const Shape& getShape() const;
   const ShapeType& getShapeType() const;
   const Position& getPosition() const;
+  const ShapeIndex& getShapeIndex() const;
   const int getContainerWidth() const;
   const int getContainerHeight() const;
 
