@@ -1,10 +1,7 @@
 # Tetris
 
 ## stack
-C++
-
-MVP
-
-SFML
-
-OOP
+- C++17
+- MVP design pattern
+- SFML
+- OOP
